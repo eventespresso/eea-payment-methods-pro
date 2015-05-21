@@ -31,7 +31,7 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 
 
 	/**
-	 * @return EED_Payment_Methods_Pro
+	 * @return EED_Payment_Methods_Pro_Event_Payment_Method
 	 */
 	public static function instance() {
 		return parent::get_instance( __CLASS__ );
@@ -59,14 +59,18 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 		 add_filter( 'FHEE__EEM_Payment_Method__get_all_for_transaction__override', array( 'EED_Payment_Methods_Pro_Event_Payment_Method', 'show_specific_payment_methods_for_events' ), 10, 3 );
 	 }
 
-	 /**
-	  * Gets all payment methods that we normally would, PLUS ones that are indicated
-	  * as ok on the events' postmetas named "include_payment_method"
-	  * @param EE_Payment_Method[]
-	  * @param EE_Transaction $transaction
-	  * @param string $scope
-	  * @return EE_Payment_Method[]
-	  */
+
+
+	/**
+	 * Gets all payment methods that we normally would, PLUS ones that are indicated
+	 * as ok on the events' postmetas named "include_payment_method"
+	 * @param $payment_methods
+	 * @param EE_Transaction $transaction
+	 * @param string $scope
+	 * @return \EE_Payment_Method[]
+	 * @throws \EE_Error
+	 * @internal param $EE_Payment_Method []
+	 */
 	 public static function show_specific_payment_methods_for_events( $payment_methods, $transaction, $scope ) {
 		 //we will want to INCLUDE certain specific gateways
 		 //based on a list we acquire
