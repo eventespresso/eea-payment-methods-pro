@@ -76,7 +76,13 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 		 //based on a list we acquire
 		 //from the transaction's event's postmeta for 'include_payment_method'
 		 if( ! $transaction instanceof EE_Transaction ) {
-			 throw new EE_Error( sprintf( __( 'We need a transaction foo!', 'event_espresso' )));
+			 if( WP_DEBUG ) {
+				 throw new EE_Error( sprintf( __( 'EED_Payment_Methods_Pro_Event_Payment_Method requires an EE_Transaction be pased in, there wasnt any.', 'event_espresso' )));
+			 }else{
+				 //meuh, forget about it. We don't have the info we need, but we don't want to blow up either
+				 //so just return what we would have before
+				 return $payment_methods;
+			 }
 		 }
 		 $event_ids_for_this_event = EEM_Event::instance()->get_col( array( array( 'Registration.TXN_ID' => $transaction->ID() ) ) );
 		 //now grab each of the postmeta with the key "include_payment_method"
