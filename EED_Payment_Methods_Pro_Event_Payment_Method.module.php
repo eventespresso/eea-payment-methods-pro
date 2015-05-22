@@ -31,7 +31,7 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 
 
 	/**
-	 * @return EED_Payment_Methods_Pro
+	 * @return EED_Payment_Methods_Pro_Event_Payment_Method
 	 */
 	public static function instance() {
 		return parent::get_instance( __CLASS__ );
@@ -46,7 +46,7 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 	  *  @return 	void
 	  */
 	 public static function set_hooks() {
-		 add_filter( 'FHEE__EEM_Payment_Method__get_all_for_transaction__override', array( 'EED_Payment_Methods_Pro_Event_Payment_Method', 'show_specific_payment_methods_for_events' ), 10, 3 );
+		 add_filter( 'FHEE__EEM_Payment_Method__get_all_for_transaction__payment_methods', array( 'EED_Payment_Methods_Pro_Event_Payment_Method', 'show_specific_payment_methods_for_events' ), 10, 3 );
 	 }
 
 	 /**
@@ -56,36 +56,44 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 	  *  @return 	void
 	  */
 	 public static function set_hooks_admin() {
-		 add_filter( 'FHEE__EEM_Payment_Method__get_all_for_transaction__override', array( 'EED_Payment_Methods_Pro_Event_Payment_Method', 'show_specific_payment_methods_for_events' ), 10, 3 );
+		 add_filter( 'FHEE__EEM_Payment_Method__get_all_for_transaction__payment_methods', array( 'EED_Payment_Methods_Pro_Event_Payment_Method', 'show_specific_payment_methods_for_events' ), 10, 3 );
 	 }
 
-	 /**
-	  * Gets all payment methods that we normally would, PLUS ones that are indicated
-	  * as ok on the events' postmetas named "include_payment_method"
-	  * @param EE_Payment_Method[]
-	  * @param EE_Transaction $transaction
-	  * @param string $scope
-	  * @return EE_Payment_Method[]
-	  */
+
+
+	/**
+	 * Gets all payment methods that we normally would, PLUS ones that are indicated
+	 * as ok on the events' postmeta named "include_payment_method"
+	 * @param $payment_methods
+	 * @param EE_Transaction $transaction
+	 * @param string $scope
+	 * @return \EE_Payment_Method[]
+	 * @throws \EE_Error
+	 * @internal param $EE_Payment_Method []
+	 */
 	 public static function show_specific_payment_methods_for_events( $payment_methods, $transaction, $scope ) {
 		 //we will want to INCLUDE certain specific gateways
 		 //based on a list we acquire
-		 //from the transaction's event's postmetas for 'include_payment_method'
+		 //from the transaction's event's postmeta for 'include_payment_method'
 		 if( ! $transaction instanceof EE_Transaction ) {
 			 throw new EE_Error( sprintf( __( 'We need a transaction foo!', 'event_espresso' )));
 		 }
 		 $event_ids_for_this_event = EEM_Event::instance()->get_col( array( array( 'Registration.TXN_ID' => $transaction->ID() ) ) );
-		 //now grab each of those's postmeta with the key "include_payment_method"
+		 //now grab each of the postmeta with the key "include_payment_method"
 		 $event_admin_names = array();
 		 foreach( $event_ids_for_this_event as $event_id ){
-			 $postmetas = get_post_meta( $event_id, self::include_payment_method_postmeta_name );
-			 $event_admin_names = array_merge( $event_admin_names, $postmetas );
+			 $postmeta = get_post_meta( $event_id, self::include_payment_method_postmeta_name );
+			 $event_admin_names = array_merge( $event_admin_names, $postmeta );
 		}
 		$query_params_for_all_active = EEM_Payment_Method::instance()->get_query_params_for_all_active( $scope );
-		return EEM_Payment_Method::instance()->get_all( array( array( 'OR' => array(
-			'AND*normal' => $query_params_for_all_active[0],
-			'AND*indicated_by_postmeta' => array( 'PMD_admin_name' => array( 'IN', $event_admin_names ) )
-		))));
+		 return EEM_Payment_Method::instance()->get_all( array(
+			 array(
+				 'OR' => array(
+					 'AND*normal' => $query_params_for_all_active[ 0 ],
+					 'AND*indicated_by_postmeta' => array( 'PMD_admin_name' => array( 'IN', $event_admin_names ) )
+				 )
+			 )
+		 ) );
 	 }
 
 

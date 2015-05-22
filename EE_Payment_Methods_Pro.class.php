@@ -37,7 +37,6 @@ Class  EE_Payment_Methods_Pro extends EE_Addon {
 //				'config_class' 			=> 'EE_Payment_Methods_Pro_Config',
 //				'config_name' 		=> 'EE_Payment_Methods_Pro',
 				'autoloader_paths' => array(
-					'EE_Payment_Methods_Pro' 						=> EE_PAYMENT_METHODS_PRO_PATH . 'EE_Payment_Methods_Pro.class.php',
 					'EE_Payment_Methods_Pro_Config' 			=> EE_PAYMENT_METHODS_PRO_PATH . 'EE_Payment_Methods_Pro_Config.php',
 //					'Payment_Methods_Pro_Admin_Page' 		=> EE_PAYMENT_METHODS_PRO_ADMIN . 'Payment_Methods_Pro_Admin_Page.core.php',
 //					'Payment_Methods_Pro_Admin_Page_Init' => EE_PAYMENT_METHODS_PRO_ADMIN . 'Payment_Methods_Pro_Admin_Page_Init.core.php',
