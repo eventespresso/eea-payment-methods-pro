@@ -30,7 +30,7 @@ Class  EE_Payment_Methods_Pro extends EE_Addon {
 			'Payment_Methods_Pro',
 			array(
 				'version' 					=> EE_PAYMENT_METHODS_PRO_VERSION,
-				'min_core_version' => '4.6.0.dev.000',
+				'min_core_version' => '4.6.29.pr.000',
 				'main_file_path' 				=> EE_PAYMENT_METHODS_PRO_PLUGIN_FILE,
 //				'admin_path' 			=> EE_PAYMENT_METHODS_PRO_ADMIN,
 //				'admin_callback'		=> 'additional_admin_hooks',
