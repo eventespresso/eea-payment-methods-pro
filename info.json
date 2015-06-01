@@ -1,6 +1,6 @@
 {
 	"versionFile" : "eea-payment-methods-pro.php",
-	"slug" : "eea-payment-mehtods-pro",
+	"slug" : "eea-payment-methods-pro",
 	"textDomain" : "event_espresso",
 	"name" : "Event Espresso Payment Method Pro",
 	"archiveBaseUrl" : "http://build.eventespresso.com/",
