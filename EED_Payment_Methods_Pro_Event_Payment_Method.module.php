@@ -86,17 +86,20 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 		 }
 		 $event_ids_for_this_event = EEM_Event::instance()->get_col( array( array( 'Registration.TXN_ID' => $transaction->ID() ) ) );
 		 //now grab each of the postmeta with the key "include_payment_method"
-		 $event_admin_names = array();
+		 $event_names = array();
 		 foreach( $event_ids_for_this_event as $event_id ){
 			 $postmeta = get_post_meta( $event_id, self::include_payment_method_postmeta_name );
-			 $event_admin_names = array_merge( $event_admin_names, $postmeta );
+			 $event_names = array_merge( $event_names, $postmeta );
 		}
 		$query_params_for_all_active = EEM_Payment_Method::instance()->get_query_params_for_all_active( $scope );
 		 return EEM_Payment_Method::instance()->get_all( array(
 			 array(
 				 'OR' => array(
 					 'AND*normal' => $query_params_for_all_active[ 0 ],
-					 'AND*indicated_by_postmeta' => array( 'PMD_admin_name' => array( 'IN', $event_admin_names ) )
+					 'AND*indicated_by_postmeta_admin_names' => array( 'PMD_admin_name' => array( 'IN', $event_names ) ),
+					 'AND*indicated_by_postmeta_frontend_names' => array( 'PMD_name' => array( 'IN', $event_names ) ),
+					 'AND*indicated_by_postmeta_slugs' => array( 'PMD_slug' => array( 'IN', $event_names ) ),
+					 'AND*indicated_by_postmeta_IDs' => array( 'PMD_ID' => array( 'IN', $event_names ) ),
 				 )
 			 )
 		 ) );
