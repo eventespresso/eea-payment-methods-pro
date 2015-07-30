@@ -98,7 +98,6 @@ class Payment_Methods_Pro_Admin_Page extends EE_Admin_Page {
 		wp_enqueue_script( 'espresso_payment_methods_pro_admin');
 
 		EE_Registry::$i18n_js_strings['confirm_reset'] = __( 'Are you sure you want to reset ALL your Event Espresso Payment_Methods_Pro Information? This cannot be undone.', 'event_espresso' );
-		wp_localize_script( 'espresso_payment_methods_pro_admin', 'eei18n', EE_Registry::$i18n_js_strings );
 	}
 
 	public function admin_init() {}
