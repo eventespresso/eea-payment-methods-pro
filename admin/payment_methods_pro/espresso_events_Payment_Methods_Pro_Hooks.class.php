@@ -27,12 +27,85 @@
 class espresso_events_Payment_Methods_Pro_Hooks extends EE_Admin_Hooks {
 
 	protected function _set_hooks_properties() {
-        $this->_name = 'payment_methods_pro';
-    }
+		$this->_name = 'payment_methods_pro';
+		$this->_metaboxes = array(
+			0 => array(
+				'page_route' => array( 'edit', 'create_new' ),
+				'func' => 'event_specific_payment_methods',
+				'label' => __('Event-Specific Payment Methods', 'event_espresso'),
+				'priority' => 'default',
+				'context' => 'side'
+				)
+		);
 
-	public function _redirect_action_early_update_category( $redirection_query_args ) { }
+		//hook into the handler for saving question groups
+		add_filter( 'FHEE__Events_Admin_Page___insert_update_cpt_item__event_update_callbacks', array( $this, 'modify_callbacks'), 10 );
 
-	public function _redirect_action_early_insert_category( $redirection_query_args ) { }
+		//hook into revision restores (we're hooking into the global action because EE_Admin_Hooks classes are already restricted by page)
+		add_action( 'AHEE_EE_Admin_Page_CPT__restore_revision', array($this, 'restore_revision' ), 10, 2 );
+	}
+
+
+
+
+
+	public function modify_callbacks( $callbacks ) {
+		//now let's add the question group callback
+		$callbacks[] = array( $this, 'update_event_specific_payment_methods' );
+		return $callbacks;
+	}
+	
+	public function event_specific_payment_methods( $post ) {
+		
+		$form = $this->_get_event_specific_payment_methods_form( $post->ID );
+		$input = $form->get_input( 'payment_methods' );
+		$form_input_html = $input->get_html_for_input();
+		echo EEH_Template::locate_template( EE_PAYMENT_METHODS_PRO_ADMIN_TEMPLATE_PATH . 'payment_methods_for_event_metabox.template.php', array(
+			'form_input_html' => $form_input_html,
+		));
+		
+	}
+	
+	protected function _get_event_specific_payment_methods_form( $post_id ) {
+		$event_specific_pms = get_post_meta( $post_id, EED_Payment_Methods_Pro_Event_Payment_Method::include_payment_method_postmeta_name_private, true );
+		$payment_methods = EEM_Payment_Method::instance()->get_all( 
+				array(
+					array(
+						'PMD_scope' => array( 'LIKE', '%' . EED_Payment_Methods_Pro_Event_Payment_Method::specific_events_scope . '%' )
+					)
+				));
+		
+		$options = array();
+		foreach( $payment_methods as $payment_method ) {
+			$options[ $payment_method->ID() ] = $payment_method->admin_name();
+		}
+		$form = new EE_Form_Section_Proper( 
+				array(
+					'subsections' => array(
+						'payment_methods' => new EE_Checkbox_Multi_Input( $options,
+						array(
+							'default' => $event_specific_pms
+						))
+					),
+				));
+		$form->_construct_finalize( null, 'event_specific_payment_methods');
+//		$form->
+		return $form;
+	}
+	
+	/**
+	 * 
+	 * @param EE_Event $event_obj
+	 * @param type $data
+	 */
+	public function update_event_specific_payment_methods( $event_obj, $data ) {
+		$form = $this->_get_event_specific_payment_methods_form( $event_obj->ID() );
+		$form->receive_form_submission( $data );
+		if( $form->is_valid() ) {
+			$input = $form->get_input( 'payment_methods' );
+			$event_obj->update_post_meta(  EED_Payment_Methods_Pro_Event_Payment_Method::include_payment_method_postmeta_name_private, $input->normalized_value() );
+		}
+	}
 
 }
 // End of file espresso_events_Payment_Methods_Pro_Hooks.class.php
