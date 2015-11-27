@@ -47,7 +47,6 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 	  */
 	 public static function set_hooks() {
 		 add_filter( 'FHEE__EEM_Payment_Method__get_all_for_transaction__payment_methods', array( 'EED_Payment_Methods_Pro_Event_Payment_Method', 'show_specific_payment_methods_for_events' ), 10, 3 );
-		 EED_Payment_Methods_Pro_Event_Payment_Method::set_hooks_both();
 	 }
 
 	 /**
@@ -58,13 +57,6 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 	  */
 	 public static function set_hooks_admin() {
 		 add_filter( 'FHEE__EEM_Payment_Method__get_all_for_transaction__payment_methods', array( 'EED_Payment_Methods_Pro_Event_Payment_Method', 'show_specific_payment_methods_for_events' ), 10, 3 );
-		 EED_Payment_Methods_Pro_Event_Payment_Method::set_hooks_both();
-	 }
-	 
-	 public static function set_hooks_both() {
-		 add_filter( 
-			'FHEE__EEM_Payment_Method__scopes', 
-			array( 'EED_Payment_Methods_Pro_Event_Payment_Method', 'add_other_scope' ) );
 	 }
 
 
@@ -111,16 +103,6 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 				 )
 			 )
 		 ) );
-	 }
-	 
-	 /**
-	  * Adds another scope which is handy for payment methods that are only for specific events
-	  * @param array $scopes
-	  * @return array
-	  */
-	 public static function add_other_scope( $scopes ) {
-		 $scopes[ 'SPECIFIC_EVENTS' ] = __( 'Only Specied Events', 'event_espresso' );
-		 return $scopes;
 	 }
 
 
