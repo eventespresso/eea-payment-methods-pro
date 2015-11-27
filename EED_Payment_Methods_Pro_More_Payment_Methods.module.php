@@ -76,6 +76,11 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
 	public static function add_buttons_onto_payment_settings_forms( $subsections, $payment_method ) {
 		$activate_another_text = sprintf( __( 'Activate Another %1$s Payment Method', 'event_espresso'), $payment_method->type() );
 		$delete_text = sprintf( __( 'Permanently Delete %1$s Payment Method', 'event_espresso'), $payment_method->admin_name() );
+		if( defined( 'EE_PAYMENTS_ADMIN_URL' ) ) {
+			$url = EE_PAYMENTS_ADMIN_URL;
+		} else { 
+			$url = '';
+		}
 		$subsections[ 'activate_another' ] = new EE_Form_Section_HTML(
 				EEH_HTML::tr(
 					EEH_HTML::th( sprintf( __( 'Advanced', 'event_espresso'), $payment_method->type() ) ) .
@@ -86,7 +91,7 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
 									'action'=>'activate_another_payment_method',
 									'payment_method_type'=>$payment_method->type()
 								),
-								EE_PAYMENTS_ADMIN_URL
+								$url
 							),
 							$activate_another_text,
 							$activate_another_text,
@@ -100,7 +105,7 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
 									'action'=>'delete_payment_method',
 									'payment_method'=>$payment_method->slug()
 								),
-								EE_PAYMENTS_ADMIN_URL
+								$url
 							),
 							$delete_text,
 							$delete_text,
@@ -180,7 +185,7 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
  
  /**
   * This needs to be a separate function because of how admin page routes are called.
-  * This route activates another paymetn method of the requested type
+  * This route activates another payment method of the requested type
   * @param Payments_Admin_Page $payment_methods_page
   */
  function ee_payment_methods_pro_activate_another_payment_method( Payments_Admin_Page $payment_methods_page ) {

@@ -119,7 +119,7 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 	  * @return array
 	  */
 	 public static function add_other_scope( $scopes ) {
-		 $scopes[ 'SPECIFIC_EVENTS' ] = __( 'Only Specied Events', 'event_espresso' );
+		 $scopes[ 'SPECIFIC_EVENTS' ] = __( 'Only Specific Events', 'event_espresso' );
 		 return $scopes;
 	 }
 
