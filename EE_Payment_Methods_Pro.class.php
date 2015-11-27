@@ -42,7 +42,9 @@ Class  EE_Payment_Methods_Pro extends EE_Addon {
 //					'Payment_Methods_Pro_Admin_Page_Init' => EE_PAYMENT_METHODS_PRO_ADMIN . 'Payment_Methods_Pro_Admin_Page_Init.core.php',
 				),
 //				'dms_paths' 			=> array( EE_PAYMENT_METHODS_PRO_PATH . 'core' . DS . 'data_migration_scripts' . DS ),
-				'module_paths' 		=> array( EE_PAYMENT_METHODS_PRO_PATH . 'EED_Payment_Methods_Pro_Event_Payment_Method.module.php' ),
+				'module_paths' 		=> array( 
+					EE_PAYMENT_METHODS_PRO_PATH . 'EED_Payment_Methods_Pro_Event_Payment_Method.module.php',
+					EE_PAYMENT_METHODS_PRO_PATH . 'EED_Payment_Methods_Pro_More_Payment_Methods.module.php'),
 //				// if plugin update engine is being used for auto-updates. not needed if PUE is not being used.
 				'pue_options'			=> array(
 					'pue_plugin_slug' => 'eea-payment-methods-pro',
