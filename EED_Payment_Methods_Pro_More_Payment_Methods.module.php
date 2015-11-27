@@ -235,7 +235,11 @@ function ee_payment_methods_pro_delete_payment_method( Payments_Admin_Page $paym
 						array(
 							'PMD_ID' => $payment_method->ID()
 						)
-					));
+					),
+					//don't allow blocking. So this could orphan transactions and payments but oh well, 
+					//EE should be able to handle that
+					false 
+					);
 			//delete related currencies
 			EEM_Extra_Meta::instance()->delete( array(
 			array(
