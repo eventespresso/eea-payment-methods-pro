@@ -163,6 +163,14 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
 		return $routes;
 	}
 	
+	/**
+	 * Changes the payment method settings form so the button to activate a paymetn 
+	 * method sends in the payment method slug too, so we can identify which payment method
+	 * of a particular type they want activated
+	 * @param EE_Form_Section_Base[] $subsections
+	 * @param EE_Payment_Method $payment_method
+	 * @return EE_Form_Section_Base[]
+	 */
 	public static function  change_activate_pm_button( $subsections, $payment_method ) {
 		$link_text_and_title = sprintf( __( 'Activate %1$s Payment Method?', 'event_espresso'), $payment_method->admin_name() );
 		return array(
