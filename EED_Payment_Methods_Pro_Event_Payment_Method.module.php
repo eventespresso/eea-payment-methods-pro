@@ -25,15 +25,18 @@
 class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 
 	/**
-	 * postmeta meta_key that indicates extra payment methods to include for certain events
+	 * postmeta meta_key that indicates extra payment methods to include for certain events.
+	 * Now deprecated because we have a metabox for setting the payment methods on the event,
+	 * instead of using teh wp custom fields area
+	 * @deprecated since version 1.0.0
 	 */
-	const include_payment_method_postmeta_name = 'include_payment_method';
+	const include_payment_method_postmeta_name_deprecated = 'include_payment_method';
 	
 	/**
 	 * postmeta which should be hidden, which mentions which event-specific payment
 	 * methods to include
 	 */
-	const include_payment_method_postmeta_name_private = '_include_payment_methods';
+	const include_payment_method_postmeta_name = '_include_payment_methods';
 	
 	const specific_events_scope = 'SPECIFIC_EVENTS';
 
@@ -105,17 +108,14 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 		 }
 		 $event_ids_for_this_event = EEM_Event::instance()->get_col( array( array( 'Registration.TXN_ID' => $transaction->ID() ) ) );
 		 //now grab each of the postmeta with the key "include_payment_method"
-		 $payment_method_names = array();
+		 $event_specific_payment_method_ids = array();
 		 foreach( $event_ids_for_this_event as $event_id ){
-			 $old_postmeta = get_post_meta( $event_id, self::include_payment_method_postmeta_name );
-			 $new_postmeta = get_post_meta( $event_id, self::include_payment_method_postmeta_name_private, true );
-			 $payment_method_names = array_merge( 
-					 $payment_method_names, 
-					 $old_postmeta, 
-					 is_array( $new_postmeta ) ? $new_postmeta : array() );
+			 $event_specific_payment_method_ids = array_merge( 
+					 $event_specific_payment_method_ids, 
+					 EED_Payment_Methods_Pro_Event_Payment_Method::get_paymnet_methods_for_event( $event_id ) );
 		}
 		//if no event-specific payment method were found, just return the original list of payment methods
-		if( empty( $payment_method_names ) ) {
+		if( empty( $event_specific_payment_method_ids ) ) {
 			return $payment_methods;
 		}
 		$query_params_for_all_active = EEM_Payment_Method::instance()->get_query_params_for_all_active( $scope );
@@ -123,10 +123,7 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 			 array(
 				 'OR' => array(
 					 'AND*normal' => $query_params_for_all_active[ 0 ],
-					 'AND*indicated_by_postmeta_admin_names' => array( 'PMD_admin_name' => array( 'IN', $payment_method_names ) ),
-					 'AND*indicated_by_postmeta_frontend_names' => array( 'PMD_name' => array( 'IN', $payment_method_names ) ),
-					 'AND*indicated_by_postmeta_slugs' => array( 'PMD_slug' => array( 'IN', $payment_method_names ) ),
-					 'AND*indicated_by_postmeta_IDs' => array( 'PMD_ID' => array( 'IN', $payment_method_names ) ),
+					 'AND*indicated_by_postmeta_IDs' => array( 'PMD_ID' => array( 'IN', $event_specific_payment_method_ids ) ),
 				 )
 			 )
 		 ) );
@@ -140,6 +137,35 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 	 public static function add_other_scope( $scopes ) {
 		 $scopes[ self::specific_events_scope ] = __( 'Only Specific Events', 'event_espresso' );
 		 return $scopes;
+	 }
+	 
+	 /**
+	  * Gets the IDs of teh paymetn methods which are specific to this event
+	  * @param string $event_id
+	  * @return array of payment method IDs
+	  */
+	 public static function get_paymnet_methods_for_event( $event_id ) {
+		 $event_specific_pms = get_post_meta( $event_id, EED_Payment_Methods_Pro_Event_Payment_Method::include_payment_method_postmeta_name_deprecated, false );
+		if( empty( $event_specific_pms ) ) {
+			$event_specific_pms = get_post_meta( $event_id, EED_Payment_Methods_Pro_Event_Payment_Method::include_payment_method_postmeta_name, true );
+		} else { 
+			//ok so we got the old postmeta which had who knows what in it. Swithc it to IDs
+			$event_specific_pms = EEM_Payment_Method::instance()->get_col( 
+				array(
+					array(
+						'OR' => array(
+							'AND*indicated_by_postmeta_admin_names' => array( 'PMD_admin_name' => array( 'IN', $event_specific_pms ) ),
+							'AND*indicated_by_postmeta_frontend_names' => array( 'PMD_name' => array( 'IN', $event_specific_pms ) ),
+							'AND*indicated_by_postmeta_slugs' => array( 'PMD_slug' => array( 'IN', $event_specific_pms ) ),
+							'AND*indicated_by_postmeta_IDs' => array( 'PMD_ID' => array( 'IN', $event_specific_pms ) ),
+						)
+					)
+				),
+				'PMD_ID' );
+			delete_post_meta( $event_id, EED_Payment_Methods_Pro_Event_Payment_Method::include_payment_method_postmeta_name_deprecated );
+			add_post_meta( $event_id, EED_Payment_Methods_Pro_Event_Payment_Method::include_payment_method_postmeta_name, $event_specific_pms );
+		}
+		return $event_specific_pms;
 	 }
 
 

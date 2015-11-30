@@ -62,6 +62,9 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
 		add_filter( 
 				'FHEE__Payments_Admin_Page___generate_payment_method_settings_form__form_subsections', 
 				array( 'EED_Payment_Methods_Pro_More_Payment_Methods', 'add_buttons_onto_payment_settings_forms'), 10, 2 );
+		add_filter( 
+				'FHEE__Payments_Admin_Page___activate_payment_method_button__form_subsections', 
+				array( 'EED_Payment_Methods_Pro_More_Payment_Methods', 'change_activate_pm_button'), 10, 2 );
 	 }
 
 
@@ -152,7 +155,41 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
 			'noheader'=>TRUE,
 			'capability' => 'ee_delete_payment_methods'
 			);
+		$routes[ 'activate_payment_method' ] = array(
+				'func'=>'ee_payment_methods_pro_activate_payment_method',
+				'noheader'=>TRUE,
+				'capability' => 'ee_edit_payment_methods'
+				);
 		return $routes;
+	}
+	
+	public static function  change_activate_pm_button( $subsections, $payment_method ) {
+		$link_text_and_title = sprintf( __( 'Activate %1$s Payment Method?', 'event_espresso'), $payment_method->admin_name() );
+		return array(
+						new EE_Form_Section_HTML(
+							EEH_HTML::tr(
+								EEH_HTML::th(
+									EEH_HTML::label( __( 'Click to Activate ', 'event_espresso' ))
+								) .
+								EEH_HTML::td(
+									EEH_HTML::link(
+										EE_Admin_Page::add_query_args_and_nonce(
+											array(
+												'action' => 'activate_payment_method',
+												'payment_method_type' => $payment_method->type(),
+												'payment_method_slug' => $payment_method->slug(),
+											),
+											EE_PAYMENTS_ADMIN_URL
+										),
+										$link_text_and_title,
+										$link_text_and_title,
+										'activate_' . $payment_method->slug(),
+										'espresso-button-green button-primary'
+									)
+								)
+							)
+						)
+					);
 	}
 
 
@@ -252,4 +289,36 @@ function ee_payment_methods_pro_delete_payment_method( Payments_Admin_Page $paym
 
 	}
 	$payment_methods_page->redirect_after_action( $success, 'Payment Method', 'deleted', array('action' => 'default' ) );
+}
+
+/**
+ * Used instead of normal payment method activation route because we want to look for the specific payment method slug
+ * @param Payments_Admin_Page $payment_methods_page
+ */
+function ee_payment_methods_pro_activate_payment_method( Payments_Admin_Page $payment_methods_page ){
+	$req_data = $payment_methods_page->get_request_data();
+	$slug = isset( $req_data[ 'payment_method_slug' ] ) ? $req_data[ 'payment_method_slug' ] : '';
+	$type = isset($req_data['payment_method_type']) ? $req_data['payment_method_type'] : '';
+	$payment_method = EEM_Payment_Method::instance()->get_one(
+			array(
+				array(
+					'PMD_slug' => $slug,
+					'PMD_type' => $type ) ) );
+	if( $payment_method instanceof EE_Payment_Method ) {
+		EE_Registry::instance()->load_lib( 'Payment_Method_Manager' );
+		EE_Payment_Method_Manager::instance()->activate_and_initialize_payment_method( $payment_method );
+		$payment_methods_page->redirect_after_action(1, 'Payment Method', 'activated', array('action' => 'default','payment_method'=>$payment_method->slug()));
+	}
+	//if the slug didn't find a payment method, fallback to the old way of looking
+	
+	//if the payment method slug 
+	$payment_method_type = sanitize_text_field($req_data['payment_method_type']);
+	//see if one exists
+	EE_Registry::instance()->load_lib( 'Payment_Method_Manager' );
+	$payment_method = EE_Payment_Method_Manager::instance()->activate_a_payment_method_of_type( $payment_method_type );
+	if( $payment_method instanceof EE_Payment_Method ) {
+		$payment_methods_page->redirect_after_action(1, 'Payment Method', 'activated', array('action' => 'default','payment_method'=>$payment_method->slug()));
+	}else{
+		$payment_methods_page->redirect_after_action(FALSE, 'Payment Method', 'activated', array('action' => 'default'));
+	}
 }

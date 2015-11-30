@@ -67,7 +67,6 @@ class espresso_events_Payment_Methods_Pro_Hooks extends EE_Admin_Hooks {
 	}
 	
 	protected function _get_event_specific_payment_methods_form( $post_id ) {
-		$event_specific_pms = get_post_meta( $post_id, EED_Payment_Methods_Pro_Event_Payment_Method::include_payment_method_postmeta_name_private, true );
 		$payment_methods = EEM_Payment_Method::instance()->get_all( 
 				array(
 					array(
@@ -84,7 +83,7 @@ class espresso_events_Payment_Methods_Pro_Hooks extends EE_Admin_Hooks {
 					'subsections' => array(
 						'payment_methods' => new EE_Checkbox_Multi_Input( $options,
 						array(
-							'default' => $event_specific_pms
+							'default' => EED_Payment_Methods_Pro_Event_Payment_Method::get_paymnet_methods_for_event( $post_id )
 						))
 					),
 				));
@@ -103,7 +102,7 @@ class espresso_events_Payment_Methods_Pro_Hooks extends EE_Admin_Hooks {
 		$form->receive_form_submission( $data );
 		if( $form->is_valid() ) {
 			$input = $form->get_input( 'payment_methods' );
-			$event_obj->update_post_meta(  EED_Payment_Methods_Pro_Event_Payment_Method::include_payment_method_postmeta_name_private, $input->normalized_value() );
+			$event_obj->update_post_meta(  EED_Payment_Methods_Pro_Event_Payment_Method::include_payment_method_postmeta_name, $input->normalized_value() );
 		}
 	}
 
