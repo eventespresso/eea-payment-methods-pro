@@ -109,7 +109,14 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 		 foreach( $event_ids_for_this_event as $event_id ){
 			 $old_postmeta = get_post_meta( $event_id, self::include_payment_method_postmeta_name );
 			 $new_postmeta = get_post_meta( $event_id, self::include_payment_method_postmeta_name_private, true );
-			 $payment_method_names = array_merge( $payment_method_names, $old_postmeta, $new_postmeta );
+			 $payment_method_names = array_merge( 
+					 $payment_method_names, 
+					 $old_postmeta, 
+					 is_array( $new_postmeta ) ? $new_postmeta : array() );
+		}
+		//if no event-specific payment method were found, just return the original list of payment methods
+		if( empty( $payment_method_names ) ) {
+			return $payment_methods;
 		}
 		$query_params_for_all_active = EEM_Payment_Method::instance()->get_query_params_for_all_active( $scope );
 		 return EEM_Payment_Method::instance()->get_all( array(
