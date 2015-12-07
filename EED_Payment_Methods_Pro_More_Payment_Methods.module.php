@@ -206,7 +206,9 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
 					$pm->set_slug( $slug_base . '-' . $count );
 					$pm->set_admin_name( $admin_name_base . ' ' . $count ++ );
 				}
-				$payment_methods_manager->activate_and_initialize_payment_method( $pm );
+				$payment_methods_manager->initialize_payment_method( $pm );
+				$pm->set_active();
+				$pm->save();
 				$payment_methods_manager->set_usable_currencies_on_payment_method( $pm );
 				$pm_slug = $pm->slug();
 				$success = true;
@@ -253,3 +255,36 @@ function ee_payment_methods_pro_delete_payment_method( Payments_Admin_Page $paym
 	}
 	$payment_methods_page->redirect_after_action( $success, 'Payment Method', 'deleted', array('action' => 'default' ) );
 }
+
+/**
+ * Used instead of normal payment method activation route because we want to look for the specific payment method slug
+ * @param Payments_Admin_Page $payment_methods_page
+ */
+function ee_payment_methods_pro_activate_payment_method( Payments_Admin_Page $payment_methods_page ){
+	$req_data = $payment_methods_page->get_request_data();
+	$slug = isset( $req_data[ 'payment_method_slug' ] ) ? $req_data[ 'payment_method_slug' ] : '';
+	$type = isset($req_data['payment_method_type']) ? $req_data['payment_method_type'] : '';
+	$payment_method = EEM_Payment_Method::instance()->get_one(
+			array(
+				array(
+					'PMD_slug' => $slug,
+					'PMD_type' => $type ) ) );
+	if( $payment_method instanceof EE_Payment_Method ) {
+		EE_Registry::instance()->load_lib( 'Payment_Method_Manager' );
+		EE_Payment_Method_Manager::instance()->initialize_payment_method( $payment_method );
+		$payment_methods_page->redirect_after_action(1, 'Payment Method', 'activated', array('action' => 'default','payment_method'=>$payment_method->slug()));
+	}
+	//if the slug didn't find a payment method, fallback to the old way of looking
+	
+	//if the payment method slug 
+	$payment_method_type = sanitize_text_field($req_data['payment_method_type']);
+	//see if one exists
+	EE_Registry::instance()->load_lib( 'Payment_Method_Manager' );
+	$payment_method = EE_Payment_Method_Manager::instance()->activate_a_payment_method_of_type( $payment_method_type );
+	if( $payment_method instanceof EE_Payment_Method ) {
+		$payment_methods_page->redirect_after_action(1, 'Payment Method', 'activated', array('action' => 'default','payment_method'=>$payment_method->slug()));
+	}else{
+		$payment_methods_page->redirect_after_action(FALSE, 'Payment Method', 'activated', array('action' => 'default'));
+	}
+}
+
