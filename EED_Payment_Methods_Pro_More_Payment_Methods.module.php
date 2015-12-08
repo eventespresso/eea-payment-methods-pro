@@ -332,7 +332,3 @@ function ee_payment_methods_pro_activate_payment_method( Payments_Admin_Page $pa
 		$payment_methods_page->redirect_after_action(FALSE, 'Payment Method', 'activated', array('action' => 'default'));
 	}
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> FET-9100-multiple-payment-methods-of-same-type

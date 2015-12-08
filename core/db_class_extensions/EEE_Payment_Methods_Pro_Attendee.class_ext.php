@@ -13,21 +13,24 @@ if (!defined('EVENT_ESPRESSO_VERSION')) {
  * @author				Mike Nelson
  *
  */
-class EEE_Payment_Methods_Pro_Attendee extends EEE_Base_Class{
+class EEE_Payment_Methods_Pro_Event extends EEE_Base_Class{
 
 	public function __construct(){
-		$this->_model_name_extended = 'Attendee';
+		$this->_model_name_extended = 'Event';
 		parent::__construct();
 	}
 
 	/**
-	 * Samples function that can be called on any EE_Attendee when this class extension
-	 * is registered
-	 * @param type $txn_id
+	 * Sets these payment method IDs to be the only paymen tmethods related to this event
+	 * (ie overwrites previous relations)
+	 * @param array $payment_method_ids IDs of related payment methods
 	 * @return boolean
 	 */
-	function ext_foobar( $txn_id = FALSE ){
-		return TRUE;
+	function ext_set_related_payment_methods( $payment_method_ids ){
+		foreach( $payment_method_ids as $payment_method_id ) {
+			$result = $this->_->_add_relation_to( $payment_method_id, 'Payment_Method' );
+		}
+		return $result;
 	}
 }
 

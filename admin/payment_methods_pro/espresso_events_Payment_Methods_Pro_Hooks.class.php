@@ -56,7 +56,6 @@ class espresso_events_Payment_Methods_Pro_Hooks extends EE_Admin_Hooks {
 	}
 	
 	public function event_specific_payment_methods( $post ) {
-		
 		$form = $this->_get_event_specific_payment_methods_form( $post->ID );
 		$input = $form->get_input( 'payment_methods' );
 		$form_input_html = $input->get_html_for_input();
@@ -102,7 +101,7 @@ class espresso_events_Payment_Methods_Pro_Hooks extends EE_Admin_Hooks {
 		$form->receive_form_submission( $data );
 		if( $form->is_valid() ) {
 			$input = $form->get_input( 'payment_methods' );
-			$event_obj->update_post_meta(  EED_Payment_Methods_Pro_Event_Payment_Method::include_payment_method_postmeta_name, $input->normalized_value() );
+			$event_obj->set_related_payment_methods( $input->normalized_value() );
 		}
 	}
 

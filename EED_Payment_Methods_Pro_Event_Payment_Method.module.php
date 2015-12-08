@@ -147,7 +147,7 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 	 public static function get_paymnet_methods_for_event( $event_id ) {
 		 $event_specific_pms = get_post_meta( $event_id, EED_Payment_Methods_Pro_Event_Payment_Method::include_payment_method_postmeta_name_deprecated, false );
 		if( empty( $event_specific_pms ) ) {
-			$event_specific_pms = get_post_meta( $event_id, EED_Payment_Methods_Pro_Event_Payment_Method::include_payment_method_postmeta_name, true );
+			$event_specific_pms = EEM_Payment_Method::instance()->get_col( array( array( 'Event.EVT_ID' => $event_id ) ) );
 		} else { 
 			//ok so we got the old postmeta which had who knows what in it. Swithc it to IDs
 			$event_specific_pms = EEM_Payment_Method::instance()->get_col( 
@@ -163,7 +163,8 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 				),
 				'PMD_ID' );
 			delete_post_meta( $event_id, EED_Payment_Methods_Pro_Event_Payment_Method::include_payment_method_postmeta_name_deprecated );
-			add_post_meta( $event_id, EED_Payment_Methods_Pro_Event_Payment_Method::include_payment_method_postmeta_name, $event_specific_pms );
+			$event = EEM_Event::instance()->get_one_by_ID( $event_id );
+			$event->set_related_payment_methods( $event_specific_pms );
 		}
 		return $event_specific_pms;
 	 }
