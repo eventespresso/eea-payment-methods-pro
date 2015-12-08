@@ -251,7 +251,9 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
 					$pm->set_slug( $slug_base . '-' . $count );
 					$pm->set_admin_name( $admin_name_base . ' ' . $count ++ );
 				}
-				$payment_methods_manager->activate_and_initialize_payment_method( $pm );
+				$payment_methods_manager->initialize_payment_method( $pm );
+				$pm->set_active();
+				$pm->save();
 				$payment_methods_manager->set_usable_currencies_on_payment_method( $pm );
 				$pm_slug = $pm->slug();
 				$success = true;
@@ -314,7 +316,7 @@ function ee_payment_methods_pro_activate_payment_method( Payments_Admin_Page $pa
 					'PMD_type' => $type ) ) );
 	if( $payment_method instanceof EE_Payment_Method ) {
 		EE_Registry::instance()->load_lib( 'Payment_Method_Manager' );
-		EE_Payment_Method_Manager::instance()->activate_and_initialize_payment_method( $payment_method );
+		EE_Payment_Method_Manager::instance()->initialize_payment_method( $payment_method );
 		$payment_methods_page->redirect_after_action(1, 'Payment Method', 'activated', array('action' => 'default','payment_method'=>$payment_method->slug()));
 	}
 	//if the slug didn't find a payment method, fallback to the old way of looking
@@ -330,3 +332,7 @@ function ee_payment_methods_pro_activate_payment_method( Payments_Admin_Page $pa
 		$payment_methods_page->redirect_after_action(FALSE, 'Payment Method', 'activated', array('action' => 'default'));
 	}
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> FET-9100-multiple-payment-methods-of-same-type
