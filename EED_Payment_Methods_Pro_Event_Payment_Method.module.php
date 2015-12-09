@@ -33,11 +33,9 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 	const include_payment_method_postmeta_name_deprecated = 'include_payment_method';
 	
 	/**
-	 * postmeta which should be hidden, which mentions which event-specific payment
-	 * methods to include
+	 * New scope that indicates these payment methods should appear in the payment methods
+	 * metabox on the events page
 	 */
-	const include_payment_method_postmeta_name = '_include_payment_methods';
-	
 	const specific_events_scope = 'SPECIFIC_EVENTS';
 
 

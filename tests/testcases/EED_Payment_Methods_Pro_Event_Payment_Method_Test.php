@@ -30,7 +30,7 @@ class EED_Payment_Methods_Pro_Event_Payment_Method_Test extends EE_UnitTestCase{
 
 		$primary_reg = $t->primary_registration();
 		$event = $primary_reg->event();
-		$event->add_post_meta( EED_Payment_Methods_Pro_Event_Payment_Method::include_payment_method_postmeta_name, $active_payment_method_in_backend->admin_name(), false );
+		$event->set_related_payment_methods( array( $active_payment_method_in_backend->ID() ) );
 		//now when we look for payment methods, we should find the one indicated by the postmeta
 		$payment_methods_for_t = EEM_Payment_Method::instance()->get_all_for_transaction( $t, EEM_Payment_Method::scope_cart );
 		$this->assertEEModelObjectsEquals( $active_payment_method_in_backend, reset( $payment_methods_for_t ) );
