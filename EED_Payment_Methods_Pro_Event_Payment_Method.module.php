@@ -164,6 +164,7 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 				'PMD_ID' );
 			delete_post_meta( $event_id, EED_Payment_Methods_Pro_Event_Payment_Method::include_payment_method_postmeta_name_deprecated );
 			$event = EEM_Event::instance()->get_one_by_ID( $event_id );
+			//use method from EEE_Payment_Methods_Pro_Event to add relation to all specified events
 			$event->set_related_payment_methods( $event_specific_pms );
 		}
 		return $event_specific_pms;
@@ -190,22 +191,6 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 	  */
 	 public function run( $WP ) {
 	 }
-
-
-
-
-	/**
-	 *		@ override magic methods
-	 *		@ return void
-	 */
-	public function __set($a,$b) { return FALSE; }
-	public function __get($a) { return FALSE; }
-	public function __isset($a) { return FALSE; }
-	public function __unset($a) { return FALSE; }
-	public function __clone() { return FALSE; }
-	public function __wakeup() { return FALSE; }
-	public function __destruct() { return FALSE; }
-
  }
 // End of file EED_Payment_Methods_Pro.module.php
 // Location: /wp-content/plugins/eea-payment-methods-pro/EED_Payment_Methods_Pro.module.php

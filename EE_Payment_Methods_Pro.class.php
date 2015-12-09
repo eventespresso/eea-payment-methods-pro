@@ -62,7 +62,7 @@ Class  EE_Payment_Methods_Pro extends EE_Addon {
 //					),
 //				'class_paths' => EE_PAYMENT_METHODS_PRO_PATH . 'core' . DS . 'db_classes',
 //				'model_paths' => EE_PAYMENT_METHODS_PRO_PATH . 'core' . DS . 'db_models',
-//				'class_extension_paths' => EE_PAYMENT_METHODS_PRO_PATH . 'core' . DS . 'db_class_extensions',
+				'class_extension_paths' => EE_PAYMENT_METHODS_PRO_PATH . 'core' . DS . 'db_class_extensions',
 				'model_extension_paths' => EE_PAYMENT_METHODS_PRO_PATH . 'core' . DS . 'db_model_extensions',
 //				'custom_post_types' => array(), //note for the mock we're not actually adding any custom
 //								   //cpt stuff yet.

@@ -36,7 +36,7 @@ class Payment_Methods_Pro_Admin_Page_Init extends EE_Admin_Page_Init  {
 		do_action( 'AHEE_log', __FILE__, __FUNCTION__, '' );
 
 		define( 'PAYMENT_METHODS_PRO_PG_SLUG', 'espresso_payment_methods_pro' );
-		define( 'PAYMENT_METHODS_PRO_LABEL', __( 'Payment_Methods_Pro', 'event_espresso' ));
+		define( 'PAYMENT_METHODS_PRO_LABEL', __( 'Payment Methods Pro', 'event_espresso' ));
 		define( 'EE_PAYMENT_METHODS_PRO_ADMIN_URL', admin_url( 'admin.php?page=' . PAYMENT_METHODS_PRO_PG_SLUG ));
 		define( 'EE_PAYMENT_METHODS_PRO_ADMIN_ASSETS_PATH', EE_PAYMENT_METHODS_PRO_ADMIN . 'assets' . DS );
 		define( 'EE_PAYMENT_METHODS_PRO_ADMIN_ASSETS_URL', EE_PAYMENT_METHODS_PRO_URL . 'admin' . DS . 'payment_methods_pro' . DS . 'assets' . DS );

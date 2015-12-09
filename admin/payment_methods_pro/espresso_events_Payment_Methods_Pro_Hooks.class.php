@@ -101,6 +101,7 @@ class espresso_events_Payment_Methods_Pro_Hooks extends EE_Admin_Hooks {
 		$form->receive_form_submission( $data );
 		if( $form->is_valid() ) {
 			$input = $form->get_input( 'payment_methods' );
+			//use method from EEE_Payment_Methods_Pro_Event to add relation to all specified events
 			$event_obj->set_related_payment_methods( $input->normalized_value() );
 		}
 	}

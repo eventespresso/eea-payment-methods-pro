@@ -27,6 +27,14 @@ class EEE_Payment_Methods_Pro_Event extends EEE_Base_Class{
 	 * @return boolean
 	 */
 	function ext_set_related_payment_methods( $payment_method_ids ){
+		EEM_Extra_Join::instance()->delete( 
+			array(
+				array(
+					'EXJ_first_model_ID' => $this->_->ID(),
+					'EXJ_first_model_name' => 'Event',
+					'EXJ_second_model_name' => 'Payment_Method'
+				)
+			));
 		foreach( $payment_method_ids as $payment_method_id ) {
 			$result = $this->_->_add_relation_to( $payment_method_id, 'Payment_Method' );
 		}
