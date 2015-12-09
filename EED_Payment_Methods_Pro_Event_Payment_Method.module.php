@@ -84,8 +84,8 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 
 
 	/**
-	 * Gets all payment methods that we normally would, PLUS ones that are indicated
-	 * as ok on the events' postmeta named "include_payment_method"
+	 * Gets all payment methods that we normally would, PLUS ones that are specifically related
+	 * to the events on this transaction
 	 * @param $payment_methods
 	 * @param EE_Transaction $transaction
 	 * @param string $scope
@@ -166,6 +166,14 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 			$event = EEM_Event::instance()->get_one_by_ID( $event_id );
 			//use method from EEE_Payment_Methods_Pro_Event to add relation to all specified events
 			$event->set_related_payment_methods( $event_specific_pms );
+			//and make sure the payment method is scoped properly (before 
+			foreach( $event_specific_pms as $payment_method_id ) {
+				$pm = EEM_Payment_Method::instance()->get_one_by_ID( $payment_method_id );
+				$scopes = $pm->scope();
+				$scopes[] = EED_Payment_Methods_Pro_Event_Payment_Method::specific_events_scope;
+				$pm->set_scope( $scopes );
+				$pm->save();
+			}
 		}
 		return $event_specific_pms;
 	 }
