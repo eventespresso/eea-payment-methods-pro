@@ -82,7 +82,7 @@ class espresso_events_Payment_Methods_Pro_Hooks extends EE_Admin_Hooks {
 					'subsections' => array(
 						'payment_methods' => new EE_Checkbox_Multi_Input( $options,
 						array(
-							'default' => EED_Payment_Methods_Pro_Event_Payment_Method::get_paymnet_methods_for_event( $post_id )
+							'default' => EED_Payment_Methods_Pro_Event_Payment_Method::get_payment_methods_for_event( $post_id )
 						))
 					),
 				));

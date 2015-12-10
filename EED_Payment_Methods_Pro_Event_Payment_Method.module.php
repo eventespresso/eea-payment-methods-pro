@@ -110,7 +110,7 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 		 foreach( $event_ids_for_this_event as $event_id ){
 			 $event_specific_payment_method_ids = array_merge( 
 					 $event_specific_payment_method_ids, 
-					 EED_Payment_Methods_Pro_Event_Payment_Method::get_paymnet_methods_for_event( $event_id ) );
+					 EED_Payment_Methods_Pro_Event_Payment_Method::get_payment_methods_for_event( $event_id ) );
 		}
 		//if no event-specific payment method were found, just return the original list of payment methods
 		if( empty( $event_specific_payment_method_ids ) ) {
@@ -142,7 +142,7 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 	  * @param string $event_id
 	  * @return array of payment method IDs
 	  */
-	 public static function get_paymnet_methods_for_event( $event_id ) {
+	 public static function get_payment_methods_for_event( $event_id ) {
 		 $event_specific_pms = get_post_meta( $event_id, EED_Payment_Methods_Pro_Event_Payment_Method::include_payment_method_postmeta_name_deprecated, false );
 		if( empty( $event_specific_pms ) ) {
 			$event_specific_pms = EEM_Payment_Method::instance()->get_col( array( array( 'Event.EVT_ID' => $event_id ) ) );
