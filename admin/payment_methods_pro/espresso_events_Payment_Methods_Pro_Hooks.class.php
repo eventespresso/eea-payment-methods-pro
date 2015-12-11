@@ -69,7 +69,7 @@ class espresso_events_Payment_Methods_Pro_Hooks extends EE_Admin_Hooks {
 		$payment_methods = EEM_Payment_Method::instance()->get_all( 
 				array(
 					array(
-						'PMD_scope' => array( 'LIKE', '%' . EED_Payment_Methods_Pro_Event_Payment_Method::specific_events_scope . '%' )
+						'PMD_scope' => array( 'LIKE', '%' . EED_Payment_Methods_Pro_Event_Payment_Method::scope_specific_events . '%' )
 					)
 				));
 		

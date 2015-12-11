@@ -36,7 +36,7 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 	 * New scope that indicates these payment methods should appear in the payment methods
 	 * metabox on the events page
 	 */
-	const specific_events_scope = 'SPECIFIC_EVENTS';
+	const scope_specific_events = 'SPECIFIC_EVENTS';
 
 
 	/**
@@ -137,7 +137,7 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 	  * @return array
 	  */
 	 public static function add_other_scope( $scopes ) {
-		 $scopes[ self::specific_events_scope ] = __( 'Only Specific Events', 'event_espresso' );
+		 $scopes[ self::scope_specific_events ] = __( 'Only Specific Events', 'event_espresso' );
 		 return $scopes;
 	 }
 	 
@@ -172,7 +172,7 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 			foreach( $event_specific_pms as $payment_method_id ) {
 				$pm = EEM_Payment_Method::instance()->get_one_by_ID( $payment_method_id );
 				$scopes = $pm->scope();
-				$scopes[] = EED_Payment_Methods_Pro_Event_Payment_Method::specific_events_scope;
+				$scopes[] = EED_Payment_Methods_Pro_Event_Payment_Method::scope_specific_events;
 				$pm->set_scope( $scopes );
 				$pm->save();
 			}
@@ -189,9 +189,9 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 	 public static function ensure_frontend_or_event_specific_scope( $pm ) {
 		if( $pm instanceof EE_Payment_Method &&
 			in_array( EEM_Payment_Method::scope_cart, $pm->scope() ) &&
-			in_array( EED_Payment_Methods_Pro_Event_Payment_Method::specific_events_scope, $pm->scope() ) ) {
+			in_array( EED_Payment_Methods_Pro_Event_Payment_Method::scope_specific_events, $pm->scope() ) ) {
 			$new_scope = $pm->scope();
-			$index_of_event_scope = array_search( EED_Payment_Methods_Pro_Event_Payment_Method::specific_events_scope, $new_scope );
+			$index_of_event_scope = array_search( EED_Payment_Methods_Pro_Event_Payment_Method::scope_specific_events, $new_scope );
 			//we know we'll find it because we just asserted it was in_array
 			unset( $new_scope[ $index_of_event_scope ] );
 			//no need to save because we hooked into JUST before the save
