@@ -67,6 +67,10 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 	  */
 	 public static function set_hooks_admin() {
 		 add_filter( 'FHEE__EEM_Payment_Method__get_all_for_transaction__payment_methods', array( 'EED_Payment_Methods_Pro_Event_Payment_Method', 'show_specific_payment_methods_for_events' ), 10, 3 );
+		 add_action(  
+			 'AHEE__EE_Base_Class__save__begin', 
+			 array( 'EED_Payment_Methods_Pro_Event_Payment_Method', 'ensure_frontend_or_event_specific_scope' )
+			 );
 		 EED_Payment_Methods_Pro_Event_Payment_Method::set_hooks_both();
 	 }
 	 
@@ -174,6 +178,25 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 			}
 		}
 		return $event_specific_pms;
+	 }
+	 
+	 /**
+	  * Just before a payment method is saved, verify they haven't set
+	  * the scope to both cart AND event-specific
+	  * @param EE_Payment_Method $pm
+	  * @return void
+	  */
+	 public static function ensure_frontend_or_event_specific_scope( $pm ) {
+		if( $pm instanceof EE_Payment_Method &&
+			in_array( EEM_Payment_Method::scope_cart, $pm->scope() ) &&
+			in_array( EED_Payment_Methods_Pro_Event_Payment_Method::specific_events_scope, $pm->scope() ) ) {
+			$new_scope = $pm->scope();
+			$index_of_event_scope = array_search( EED_Payment_Methods_Pro_Event_Payment_Method::specific_events_scope, $new_scope );
+			//we know we'll find it because we just asserted it was in_array
+			unset( $new_scope[ $index_of_event_scope ] );
+			//no need to save because we hooked into JUST before the save
+			$pm->set_scope( $new_scope );
+		}
 	 }
 
 
