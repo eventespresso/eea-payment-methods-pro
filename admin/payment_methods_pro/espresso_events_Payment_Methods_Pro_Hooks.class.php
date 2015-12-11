@@ -97,12 +97,21 @@ class espresso_events_Payment_Methods_Pro_Hooks extends EE_Admin_Hooks {
 	 * @param type $data
 	 */
 	public function update_event_specific_payment_methods( $event_obj, $data ) {
+		
 		$form = $this->_get_event_specific_payment_methods_form( $event_obj->ID() );
 		$form->receive_form_submission( $data );
 		if( $form->is_valid() ) {
 			$input = $form->get_input( 'payment_methods' );
 			//use method from EEE_Payment_Methods_Pro_Event to add relation to all specified events
 			$event_obj->set_related_payment_methods( $input->normalized_value() );
+			if( empty( $input->normalized_value() ) &&
+				! EEM_Payment_Method::instance()->get_all_active( EEM_Payment_Method::scope_cart ) ) {
+				EE_Error::add_attention( 
+					__( 'There are no payment methods activated for this event. Even if it\'s a free event, it\'s still a good idea to have a payment method on it. Please activate a payment method for "Front-End Registration Page" on the payments admin page, or select one in the "Event-Specific Payment Methods" section below.', 'event_espresso' ),
+					__FILE__,
+					__FUNCTION__,
+					__LINE__ );
+			}
 		}
 	}
 

@@ -78,6 +78,10 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 		 add_filter( 
 			'FHEE__EEM_Payment_Method__scopes', 
 			array( 'EED_Payment_Methods_Pro_Event_Payment_Method', 'add_other_scope' ) );
+		 add_action( 'AHEE__EE_Admin_Page_Loader___get_installed_pages_loaded',
+			array( 'EED_Payment_Methods_Pro_Event_Payment_Method', 'remove_no_payment_method_notification' ),
+			 10,
+			 1);
 	 }
 	 
 	
@@ -197,6 +201,21 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 			//no need to save because we hooked into JUST before the save
 			$pm->set_scope( $new_scope );
 		}
+	 }
+	 
+	 /**
+	  * Removes the default warning about there being no active payment methods
+	  * @param Payments_Admin_Page_Init $admin_page_init_objects
+	  */
+	 public static function remove_no_payment_method_notification( $admin_page_init_objects ) {
+		 if( isset( $admin_page_init_objects[ 'payments' ] ) &&
+			 $admin_page_init_objects[ 'payments' ] instanceof Payments_Admin_Page_Init ) {
+				remove_filter( 'admin_notices',
+					array( 
+						$admin_page_init_objects[ 'payments' ],
+						'check_payment_gateway_setup'
+					) );
+			}
 	 }
 
 
