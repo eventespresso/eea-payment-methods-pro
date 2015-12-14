@@ -214,7 +214,8 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
 	}
 	
 	/**
-	 * 
+	 * Enqueues some javascript which: when a user clicks to delete a payment method
+	 * permanently, we have a js popup ask for confirmation
 	 * @param string $hook see 
 	 */
 	public static function enqueue_scripts( $hook ) {
