@@ -323,15 +323,21 @@ function ee_payment_methods_pro_delete_payment_method( Payments_Admin_Page $paym
 function ee_payment_methods_pro_activate_payment_method( Payments_Admin_Page $payment_methods_page ){
 	$req_data = $payment_methods_page->get_request_data();
 	$slug = isset( $req_data[ 'payment_method_slug' ] ) ? $req_data[ 'payment_method_slug' ] : '';
-	$type = isset($req_data['payment_method_type']) ? $req_data['payment_method_type'] : '';
+	$type = isset( $req_data[ 'payment_method_type' ] ) ? $req_data[ 'payment_method_type' ] : '';
+	//if there's already a payment method of the correct type and slug, just reactivate it
 	$payment_method = EEM_Payment_Method::instance()->get_one(
 			array(
 				array(
 					'PMD_slug' => $slug,
-					'PMD_type' => $type ) ) );
+					'PMD_type' => $type 
+				) 
+			) 
+		);
 	if( $payment_method instanceof EE_Payment_Method ) {
 		EE_Registry::instance()->load_lib( 'Payment_Method_Manager' );
-		EE_Payment_Method_Manager::instance()->initialize_payment_method( $payment_method );
+		$payment_method->set_active();
+		$payment_method->save();
+		EE_Payment_Method_Manager::instance()->set_usable_currencies_on_payment_method( $payment_method );
 		$payment_methods_page->redirect_after_action(1, 'Payment Method', 'activated', array('action' => 'default','payment_method'=>$payment_method->slug()));
 	}
 	//if the slug didn't find a payment method, fallback to the old way of looking
