@@ -165,18 +165,18 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 		} else { 
 			//ok so we got the old postmeta which had who knows what in it. Swithc it to IDs
 			$event_specific_pms = EEM_Payment_Method::instance()->get_col( 
-				array(
 					array(
-						'OR' => array(
-							'AND*indicated_by_postmeta_admin_names' => array( 'PMD_admin_name' => array( 'IN', $event_specific_pms ) ),
-							'AND*indicated_by_postmeta_frontend_names' => array( 'PMD_name' => array( 'IN', $event_specific_pms ) ),
-							'AND*indicated_by_postmeta_slugs' => array( 'PMD_slug' => array( 'IN', $event_specific_pms ) ),
-							'AND*indicated_by_postmeta_IDs' => array( 'PMD_ID' => array( 'IN', $event_specific_pms ) ),
+						array(
+							'OR' => array(
+								'AND*indicated_by_postmeta_admin_names' => array( 'PMD_admin_name' => array( 'IN', $event_specific_pms ) ),
+								'AND*indicated_by_postmeta_frontend_names' => array( 'PMD_name' => array( 'IN', $event_specific_pms ) ),
+								'AND*indicated_by_postmeta_slugs' => array( 'PMD_slug' => array( 'IN', $event_specific_pms ) ),
+								'AND*indicated_by_postmeta_IDs' => array( 'PMD_ID' => array( 'IN', $event_specific_pms ) ),
+							)
 						)
-					)
-				),
-				'PMD_ID' 
-			);
+					),
+					'PMD_ID' 
+				);
 			delete_post_meta( $event_id, EED_Payment_Methods_Pro_Event_Payment_Method::include_payment_method_postmeta_name_deprecated );
 			$event = EEM_Event::instance()->get_one_by_ID( $event_id );
 			//use method from EEE_Payment_Methods_Pro_Event to add relation to all specified events

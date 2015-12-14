@@ -73,6 +73,7 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
 			10, 
 			2 
 		);
+		add_action( 'admin_enqueue_scripts', array( 'EED_Payment_Methods_Pro_More_Payment_Methods', 'enqueue_scripts' ) );
 	 }
 
 
@@ -108,8 +109,12 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
 							$activate_another_text,
 							'activate_another_' . $payment_method->slug(),
 							'espresso-button button-secondary'
-						) . 
-						EEH_HTML::br() . 
+						)						
+					)
+				) .
+				EEH_HTML::tr(
+					EEH_HTML::th() .
+					EEH_HTML::td(
 						EEH_HTML::link(
 							EE_Admin_Page::add_query_args_and_nonce(
 								array(
@@ -121,7 +126,7 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
 							$delete_text,
 							$delete_text,
 							'delete_' . $payment_method->slug(),
-							'espresso-button button-secondary'
+							'espresso-button button-secondary delete delete-payment-method'
 						)
 					)
 				)
@@ -206,6 +211,23 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
 							)
 						)
 					);
+	}
+	
+	/**
+	 * 
+	 * @param string $hook see 
+	 */
+	public static function enqueue_scripts( $hook ) {
+		if( $hook === 'event-espresso_page_espresso_payment_settings' ) {
+			wp_enqueue_script( 'pmp_more_payment_methods', EE_PAYMENT_METHODS_PRO_URL . '/scripts/'. 'espresso_payment_methods_pro.js');
+			wp_localize_script( 
+				'pmp_more_payment_methods', 
+				'ee_pmp_i18n', 
+				array( 
+					'delete_pm_confirm' => __( 'Are you sure you want to permanently delete this payment method? It cannot be undone.', 'event_espresso' )
+					)
+			);
+		}
 	}
 
 
