@@ -54,17 +54,25 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
 	  */
 	 public static function set_hooks_admin() {
 		add_filter( 
-				'FHEE__Payments_Admin_Page__page_setup__page_routes', 
-				array( 'EED_Payment_Methods_Pro_More_Payment_Methods', 'add_admin_routes' ) );
+			'FHEE__Payments_Admin_Page__page_setup__page_routes', 
+			array( 'EED_Payment_Methods_Pro_More_Payment_Methods', 'add_admin_routes' ) 
+		);
 		add_filter( 
-				'FHEE__Payments_Admin_Page___payment_methods_list__payment_methods', 
-				array( 'EED_Payment_Methods_Pro_More_Payment_Methods', 'add_other_payment_methods' ) );
+			'FHEE__Payments_Admin_Page___payment_methods_list__payment_methods', 
+			array( 'EED_Payment_Methods_Pro_More_Payment_Methods', 'add_other_payment_methods' ) 
+		);
 		add_filter( 
-				'FHEE__Payments_Admin_Page___generate_payment_method_settings_form__form_subsections', 
-				array( 'EED_Payment_Methods_Pro_More_Payment_Methods', 'add_buttons_onto_payment_settings_forms'), 10, 2 );
+			'FHEE__Payments_Admin_Page___generate_payment_method_settings_form__form_subsections', 
+			array( 'EED_Payment_Methods_Pro_More_Payment_Methods', 'add_buttons_onto_payment_settings_forms'), 
+			10, 
+			2 
+		);
 		add_filter( 
-				'FHEE__Payments_Admin_Page___activate_payment_method_button__form_subsections', 
-				array( 'EED_Payment_Methods_Pro_More_Payment_Methods', 'change_activate_pm_button'), 10, 2 );
+			'FHEE__Payments_Admin_Page___activate_payment_method_button__form_subsections', 
+			array( 'EED_Payment_Methods_Pro_More_Payment_Methods', 'change_activate_pm_button'), 
+			10, 
+			2 
+		);
 	 }
 
 
