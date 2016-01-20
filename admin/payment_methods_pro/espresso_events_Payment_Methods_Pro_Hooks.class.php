@@ -109,8 +109,9 @@ class espresso_events_Payment_Methods_Pro_Hooks extends EE_Admin_Hooks {
 			$input = $form->get_input( 'payment_methods' );
 			//use method from EEE_Payment_Methods_Pro_Event to add relation to all specified events
 			$event_obj->set_related_payment_methods( $input->normalized_value() );
+			$selected_pms = $input->normalized_value();
 			if( 
-				empty( $input->normalized_value() )
+				empty( $selected_pms )
 				&& ! EEM_Payment_Method::instance()->get_all_active( EEM_Payment_Method::scope_cart ) 
 			) {
 				EE_Error::add_attention( 
