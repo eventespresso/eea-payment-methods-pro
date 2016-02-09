@@ -66,16 +66,16 @@ class Payment_Methods_Pro_Admin_Page_Init extends EE_Admin_Page_Init  {
 	*/
 	protected function _set_menu_map() {
 		//at least for now we don't need this
-//		$this->_menu_map = new EE_Admin_Page_Sub_Menu( array(
-//			'menu_group' => 'addons',
-//			'menu_order' => 25,
-//			'show_on_menu' => EE_Admin_Page_Menu_Map::BLOG_ADMIN_ONLY,
-//			'parent_slug' => 'espresso_events',
-//			'menu_slug' => PAYMENT_METHODS_PRO_PG_SLUG,
-//			'menu_label' => PAYMENT_METHODS_PRO_LABEL,
-//			'capability' => 'administrator',
-//			'admin_init_page' => $this
-//		));
+		$this->_menu_map = new EE_Admin_Page_Sub_Menu( array(
+			'menu_group' => 'addons',
+			'menu_order' => 25,
+			'show_on_menu' => EE_Admin_Page_Menu_Map::BLOG_ADMIN_ONLY,
+			'parent_slug' => 'espresso_events',
+			'menu_slug' => PAYMENT_METHODS_PRO_PG_SLUG,
+			'menu_label' => PAYMENT_METHODS_PRO_LABEL,
+			'capability' => 'administrator',
+			'admin_init_page' => $this
+		));
 	}
 
 

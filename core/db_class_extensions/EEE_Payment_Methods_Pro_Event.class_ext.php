@@ -35,6 +35,7 @@ class EEE_Payment_Methods_Pro_Event extends EEE_Base_Class{
 					'EXJ_second_model_name' => 'Payment_Method'
 				)
 			));
+		$result = true;
 		foreach( $payment_method_ids as $payment_method_id ) {
 			$result = $this->_->_add_relation_to( $payment_method_id, 'Payment_Method' );
 		}

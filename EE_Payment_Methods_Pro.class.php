@@ -32,9 +32,11 @@ Class  EE_Payment_Methods_Pro extends EE_Addon {
 				'version' 					=> EE_PAYMENT_METHODS_PRO_VERSION,
 				'min_core_version' => EE_PAYMENT_METHODS_PRO_CORE_VERSION_REQUIRED,
 				'main_file_path' 		=> EE_PAYMENT_METHODS_PRO_PLUGIN_FILE,
-				'admin_path' 			=> EE_PAYMENT_METHODS_PRO_ADMIN,
+//				'admin_path' 			=> EE_PAYMENT_METHODS_PRO_ADMIN, note! if we ever put this back in, we can remove the filter below
+				//for FHEE_do_other_page_hooks_espresso_events
 				'autoloader_paths' => array(
 					'EE_Payment_Methods_Pro_Config' 			=> EE_PAYMENT_METHODS_PRO_PATH . 'EE_Payment_Methods_Pro_Config.php',
+					'espresso_events_Payment_Methods_Pro_Hooks' => EE_PAYMENT_METHODS_PRO_ADMIN . 'espresso_events_Payment_Methods_Pro_Hooks.class.php'
 				),
 				'module_paths' 		=> array( 
 					EE_PAYMENT_METHODS_PRO_PATH . 'EED_Payment_Methods_Pro_Event_Payment_Method.module.php',
@@ -50,6 +52,13 @@ Class  EE_Payment_Methods_Pro extends EE_Addon {
 				'model_extension_paths' => EE_PAYMENT_METHODS_PRO_PATH . 'core' . DS . 'db_model_extensions',
 			)
 		);
+		
+		add_filter( 'FHEE_do_other_page_hooks_espresso_events', array( __CLASS__, 'add_admin_hooks_file' ) );
+	}
+	
+	public static function add_admin_hooks_file( $registered_pages){
+		$registered_pages[] = 'espresso_events_Payment_Methods_Pro_Hooks.class.php';
+		return $registered_pages;
 	}
 
 

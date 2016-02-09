@@ -60,7 +60,7 @@ class espresso_events_Payment_Methods_Pro_Hooks extends EE_Admin_Hooks {
 		$input = $form->get_input( 'payment_methods' );
 		$form_input_html = $input->get_html_for_input();
 		echo EEH_Template::locate_template( 
-			EE_PAYMENT_METHODS_PRO_ADMIN_TEMPLATE_PATH . 'payment_methods_for_event_metabox.template.php', 
+			EE_PAYMENT_METHODS_PRO_ADMIN . 'templates' . DS . 'payment_methods_for_event_metabox.template.php', 
 			array(
 				'form_input_html' => $form_input_html,
 			)
@@ -122,6 +122,10 @@ class espresso_events_Payment_Methods_Pro_Hooks extends EE_Admin_Hooks {
 				);
 			}
 		}
+	}
+	
+	protected function _set_page_object() {
+		
 	}
 
 }
