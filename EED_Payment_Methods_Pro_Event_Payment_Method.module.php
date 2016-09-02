@@ -161,7 +161,15 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 	public static function get_payment_methods_for_event( $event_id ) {
 		$event_specific_pms = get_post_meta( $event_id, EED_Payment_Methods_Pro_Event_Payment_Method::include_payment_method_postmeta_name_deprecated, false );
 		if( empty( $event_specific_pms ) ) {
-			$event_specific_pms = EEM_Payment_Method::instance()->get_col( array( array( 'Event.EVT_ID' => $event_id ) ) );
+			$event_specific_pms = EEM_Payment_Method::instance()->get_col( 
+				array( 
+					array( 
+						'Event.EVT_ID' => $event_id,
+						//verify teh payment method is still event-specific... it might have been deactivated
+						'PMD_scope' => array( 'LIKE', '%' . EED_Payment_Methods_Pro_Event_Payment_Method::scope_specific_events . '%' ) 
+					) 
+				) 
+			);
 		} else { 
 			//ok so we got the old postmeta which had who knows what in it. Swithc it to IDs
 			$event_specific_pms = EEM_Payment_Method::instance()->get_col( 
@@ -172,7 +180,9 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 								'AND*indicated_by_postmeta_frontend_names' => array( 'PMD_name' => array( 'IN', $event_specific_pms ) ),
 								'AND*indicated_by_postmeta_slugs' => array( 'PMD_slug' => array( 'IN', $event_specific_pms ) ),
 								'AND*indicated_by_postmeta_IDs' => array( 'PMD_ID' => array( 'IN', $event_specific_pms ) ),
-							)
+							),
+							//verify the payment method is still event-specific, it could have been deactivated
+							'PMD_scope' => array( 'LIKE', '%' . EED_Payment_Methods_Pro_Event_Payment_Method::scope_specific_events . '%' ),
 						)
 					),
 					'PMD_ID' 
