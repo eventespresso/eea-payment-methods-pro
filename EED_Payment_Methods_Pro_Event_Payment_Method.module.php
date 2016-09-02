@@ -149,7 +149,7 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 	 * @return array
 	 */
 	public static function add_other_scope( $scopes ) {
-		$scopes[ self::scope_specific_events ] = __( 'Only Specific Events', 'event_espresso' );
+		$scopes[ self::scope_specific_events ] = __( 'Only Specific Events (if selecting this, deselect "Front-end Registration Page")', 'event_espresso' );
 		return $scopes;
 	}
 	 
@@ -204,9 +204,22 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 			&& in_array( EEM_Payment_Method::scope_cart, $pm->scope() )
 			&& in_array( EED_Payment_Methods_Pro_Event_Payment_Method::scope_specific_events, $pm->scope() ) ) {
 			$new_scope = $pm->scope();
-			$index_of_event_scope = array_search( EED_Payment_Methods_Pro_Event_Payment_Method::scope_specific_events, $new_scope );
+			$index_of_frontend_scope = array_search( EEM_Payment_Method::scope_cart, $new_scope );
 			//we know we'll find it because we just asserted it was in_array
-			unset( $new_scope[ $index_of_event_scope ] );
+			unset( $new_scope[ $index_of_frontend_scope ] );
+			EE_Error::add_attention( 
+				sprintf(
+					esc_html__( 
+						'You have selected to make a payment method available on %1$sall%2$s events and only %1$sspecific%2$s events, which is a contradiction. You probably meant to make it available for only specific events, so it has been updated to be usable from "Only Specific Events". %3$sIf this is not correct, please update the payment method\'s "Usable From" value, and choose either "Front-End Registration Page" or "Only Specific Events", not both.', 
+						'event_espresso' ),
+					'<b>',
+					'</b>',
+					'<br>'
+				),
+				__FILE__,
+				__FUNCTION__,
+				__LINE__
+			);
 			//no need to save because we hooked into JUST before the save
 			$pm->set_scope( $new_scope );
 		}
