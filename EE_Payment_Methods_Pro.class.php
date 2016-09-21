@@ -53,6 +53,8 @@ Class  EE_Payment_Methods_Pro extends EE_Addon {
 			)
 		);
 		
+		add_action( 'AHEE__EE_System__load_espresso_addons', array( __CLASS__, 'deactivate_if_mer_active' ), 20 );
+		
 		add_filter( 'FHEE_do_other_page_hooks_espresso_events', array( __CLASS__, 'add_admin_hooks_file' ) );
 	}
 	
@@ -93,9 +95,28 @@ Class  EE_Payment_Methods_Pro extends EE_Addon {
 		}
 		return $links;
 	}
-
-
-
+	
+	/**
+	 * Don't run MER and payment methods pro together, because if we did that, we'd
+	 * have to only show payment methods usable by ALL selected events, and it's
+	 * possible there might be none, so we'd need to have some fallback plan etc.
+	 * Besides, people who need this probably don't need MER. But we'll see
+	 * if folks indicate otherwise
+	 */
+	public static function deactivate_if_mer_active() {
+		if( class_exists( 'EE_Multi_Event_Registration' )
+			&& EE_Registry::instance()->addons->EE_Multi_Event_Registration instanceof EE_Multi_Event_Registration ){
+			if ( ! function_exists( 'deactivate_plugins' ) ) {
+				require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+			}
+			deactivate_plugins( EE_PAYMENT_METHODS_PRO_BASENAME );
+			EE_Error::add_persistent_admin_notice(
+				'no_mer_and_pmp_together',
+				__( 'Payment Methods Pro addon was deactivated because Multi Event Registration was also active, and the two are incompatible.'),
+				true
+			);
+		}
+	}
 
 
 
