@@ -3,7 +3,7 @@
   Plugin Name: Event Espresso - Payment Methods Pro (EE4.6+)
   Plugin URI: http://www.eventespresso.com
   Description: The Event Espresso Payment Methods Pro allow you to make some payment methods ONLY be usable when registering for specific events, and allows you to activate multiple payment methods of the same type. Just activate a payment method, then update it so it's only usable "for specified events", then add a postmeta/custom field to the event you want it to be used on with the key "include_payment_method", and the value of the payment method's ADMIN name, et voila! You can repeat this for other events, and for other payment methods on the same event by adding more postmetas/custom fields also named "include_payment_method".
-  Version: 1.0.0.dev.001
+  Version: 1.0.0.dev.002
   Author: Event Espresso
   Author URI: http://www.eventespresso.com
   Copyright 2014 Event Espresso (email : support@eventespresso.com)
@@ -37,7 +37,7 @@
  * ------------------------------------------------------------------------
  */
 define( 'EE_PAYMENT_METHODS_PRO_CORE_VERSION_REQUIRED', '4.8.26.rc.0000' );
-define( 'EE_PAYMENT_METHODS_PRO_VERSION', '1.0.0.dev.001' );
+define( 'EE_PAYMENT_METHODS_PRO_VERSION', '1.0.0.dev.002' );
 define( 'EE_PAYMENT_METHODS_PRO_PLUGIN_FILE',  __FILE__ );
 function load_espresso_payment_methods_pro() {
 if ( class_exists( 'EE_Addon' )) {
