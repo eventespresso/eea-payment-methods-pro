@@ -73,7 +73,31 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
 			10, 
 			2 
 		);
-		add_action( 'admin_enqueue_scripts', array( 'EED_Payment_Methods_Pro_More_Payment_Methods', 'enqueue_scripts' ) );
+		add_action( 
+			'admin_enqueue_scripts', 
+			array( 'EED_Payment_Methods_Pro_More_Payment_Methods', 'enqueue_scripts' ) 
+		);
+		//add PMD_primary to all payment method forms
+		add_action( 
+			'AHEE__EE_Form_Section_Proper___construct_finalize__end',
+			array( 'EED_Payment_Methods_Pro_More_Payment_Methods', 'add_primary_input_to_payment_method_forms' ), 
+			10, 
+			1
+		);
+		//make sure it gets autofilled correctly
+		add_filter( 
+			'FHEE__EE_Model_Form_Section__populate_model_obj',
+			array( 'EED_Payment_Methods_Pro_More_Payment_Methods', 'populate_primary_input_too' ), 
+			10, 
+			2
+		);
+		//save it when saving the payment method too
+		add_action( 
+			'AHEE__EE_Model_Form_Section__save__done', 
+			array( 'EED_Payment_Methods_Pro_More_Payment_Methods', 'save_payment_method_form' ), 
+			10, 
+			2 
+		);
 	 }
 
 
@@ -241,6 +265,52 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
 	  */
 	 public function run( $WP ) {
 	 }
+	
+	/**
+	 * Add the PMD_primary input, but only once
+	 * @param EE_Payment_Method_Form $form
+	 */
+	public static function add_primary_input_to_payment_method_forms( $form ) {
+		if( $form instanceof EE_Payment_Method_Form
+			&& ! $form->subsection_exists(  'PMD_primary' ) ) {
+			$form->add_subsections(
+				array(
+					'PMD_primary' => new EE_Yes_No_Input(
+						array(
+							'html_label_text' => __( 'Available By Default', 'event_espresso' ),
+							'html_help_text' => __( 'Set to "No" in order to only make this payment method available for specific events (go to the event\'s admin editing page, and select the payment method in the "Payment Methods" metabox.) When set to "Yes" the payment method is available on all events by default, like normal.', 'event_espresso'),
+						))
+				),
+				'PMD_scope',
+				false
+			);
+		}
+	}
+	
+	/**
+	 * Sets the default value for PMD_primary in payment method forms
+	 * @param array $defaults
+	 * @param EE_Payment_Method_Form $form
+	 * @return array
+	 */
+	public static function populate_primary_input_too( $defaults, $form ) {
+		if( $form instanceof EE_Payment_Method_Form ) {
+			$defaults['PMD_primary'] = (bool)$form->get_model_object()->get_extra_meta( 'PMD_primary', true, true );
+		}
+		return $defaults;
+	}
+	 
+	/**
+	 * Also save the PMD_primary field when updating a payment method using the form
+	 * @param EE_Payment_Method_Form $payment_method_form
+	 * @param type $save_result
+	 */
+	public static function save_payment_method_form( $payment_method_form, $save_result ) {
+		//if we just successfully used a payment method form to save a payment method
+		if( $payment_method_form instanceof EE_Payment_Method_Form ) {
+			$payment_method_form->get_model_object()->set_primary( $payment_method_form->get_input_value( 'PMD_primary' ) );
+		}
+	}
  }
  
  /**
