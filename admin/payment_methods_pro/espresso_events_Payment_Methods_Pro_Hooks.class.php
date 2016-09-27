@@ -69,13 +69,14 @@ class espresso_events_Payment_Methods_Pro_Hooks extends EE_Admin_Hooks {
 	}
 	
 	protected function _get_event_specific_payment_methods_form( $post_id ) {
-		$payment_methods = EEM_Payment_Method::instance()->get_all( 
-				array(
-					array(
-						'PMD_scope' => array( 'LIKE', '%' . EED_Payment_Methods_Pro_Event_Payment_Method::scope_specific_events . '%' )
-					)
+		$payment_methods = EEM_Payment_Method::instance()->get_all_active( 
+			EEM_Payment_Method::scope_cart,
+			array(
+				'order_by' => array(
+					'PMD_type' => 'ASC'
 				)
-			);
+			)
+		);
 		
 		$options = array();
 		foreach( $payment_methods as $payment_method ) {
@@ -85,14 +86,16 @@ class espresso_events_Payment_Methods_Pro_Hooks extends EE_Admin_Hooks {
 					array(
 						'subsections' => array(
 							'payment_methods' => new EE_Checkbox_Multi_Input( $options,
-							array(
-								'default' => EED_Payment_Methods_Pro_Event_Payment_Method::get_payment_methods_for_event( $post_id )
-							))
+								array(
+									'default' => EEM_Payment_Method::instance()->get_IDS(
+										EEM_Payment_Method::instance()->get_payment_methods_available_for_event( $post_id )
+									)
+								)
+							)
 						),
 					)
 				);
 		$form->_construct_finalize( null, 'event_specific_payment_methods');
-//		$form->
 		return $form;
 	}
 	
@@ -108,7 +111,7 @@ class espresso_events_Payment_Methods_Pro_Hooks extends EE_Admin_Hooks {
 		if( $form->is_valid() ) {
 			$input = $form->get_input( 'payment_methods' );
 			//use method from EEE_Payment_Methods_Pro_Event to add relation to all specified events
-			$event_obj->set_related_payment_methods( $input->normalized_value() );
+			$event_obj->set_payment_methods_available_on_event( $input->normalized_value() );
 			$selected_pms = $input->normalized_value();
 			if( 
 				empty( $selected_pms )

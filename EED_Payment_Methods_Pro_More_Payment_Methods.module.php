@@ -26,7 +26,12 @@
  * ------------------------------------------------------------------------
  */
 class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
-
+	
+	/**
+	 * name of the extra meta key where we store whether or not a payment
+	 * method should appear by default on all events
+	 */
+	const on_by_default_meta_key = 'on_by_default';
 	
 	/**
 	 * @return EED_Payment_Methods_Pro_more_Payment_Methods
@@ -77,7 +82,7 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
 			'admin_enqueue_scripts', 
 			array( 'EED_Payment_Methods_Pro_More_Payment_Methods', 'enqueue_scripts' ) 
 		);
-		//add PMD_primary to all payment method forms
+		//add EED_Payment_Methods_Pro_More_Payment_Methods::on_by_default_meta_key to all payment method forms
 		add_action( 
 			'AHEE__EE_Form_Section_Proper___construct_finalize__end',
 			array( 'EED_Payment_Methods_Pro_More_Payment_Methods', 'add_primary_input_to_payment_method_forms' ), 
@@ -267,15 +272,15 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
 	 }
 	
 	/**
-	 * Add the PMD_primary input, but only once
+	 * Add the EED_Payment_Methods_Pro_More_Payment_Methods::on_by_default_meta_key input, but only once
 	 * @param EE_Payment_Method_Form $form
 	 */
 	public static function add_primary_input_to_payment_method_forms( $form ) {
 		if( $form instanceof EE_Payment_Method_Form
-			&& ! $form->subsection_exists(  'PMD_primary' ) ) {
+			&& ! $form->subsection_exists(  EED_Payment_Methods_Pro_More_Payment_Methods::on_by_default_meta_key ) ) {
 			$form->add_subsections(
 				array(
-					'PMD_primary' => new EE_Yes_No_Input(
+					EED_Payment_Methods_Pro_More_Payment_Methods::on_by_default_meta_key => new EE_Yes_No_Input(
 						array(
 							'html_label_text' => __( 'Available By Default', 'event_espresso' ),
 							'html_help_text' => __( 'Set to "No" in order to only make this payment method available for specific events (go to the event\'s admin editing page, and select the payment method in the "Payment Methods" metabox.) When set to "Yes" the payment method is available on all events by default, like normal.', 'event_espresso'),
@@ -288,27 +293,27 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
 	}
 	
 	/**
-	 * Sets the default value for PMD_primary in payment method forms
+	 * Sets the default value for EED_Payment_Methods_Pro_More_Payment_Methods::on_by_default_meta_key in payment method forms
 	 * @param array $defaults
 	 * @param EE_Payment_Method_Form $form
 	 * @return array
 	 */
 	public static function populate_primary_input_too( $defaults, $form ) {
 		if( $form instanceof EE_Payment_Method_Form ) {
-			$defaults['PMD_primary'] = (bool)$form->get_model_object()->get_extra_meta( 'PMD_primary', true, true );
+			$defaults[EED_Payment_Methods_Pro_More_Payment_Methods::on_by_default_meta_key] = (bool)$form->get_model_object()->is_available_by_default();
 		}
 		return $defaults;
 	}
 	 
 	/**
-	 * Also save the PMD_primary field when updating a payment method using the form
+	 * Also save the EED_Payment_Methods_Pro_More_Payment_Methods::on_by_default_meta_key field when updating a payment method using the form
 	 * @param EE_Payment_Method_Form $payment_method_form
 	 * @param type $save_result
 	 */
 	public static function save_payment_method_form( $payment_method_form, $save_result ) {
 		//if we just successfully used a payment method form to save a payment method
 		if( $payment_method_form instanceof EE_Payment_Method_Form ) {
-			$payment_method_form->get_model_object()->set_primary( $payment_method_form->get_input_value( 'PMD_primary' ) );
+			$payment_method_form->get_model_object()->set_available_by_default( $payment_method_form->get_input_value( EED_Payment_Methods_Pro_More_Payment_Methods::on_by_default_meta_key ) );
 		}
 	}
  }
@@ -339,6 +344,7 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
 				$payment_methods_manager->initialize_payment_method( $pm );
 				$pm->set_active();
 				$pm->save();
+				$pm->set_available_by_default( false );
 				$payment_methods_manager->set_usable_currencies_on_payment_method( $pm );
 				$pm_slug = $pm->slug();
 				$success = true;
@@ -407,6 +413,7 @@ function ee_payment_methods_pro_activate_payment_method( Payments_Admin_Page $pa
 		EE_Registry::instance()->load_lib( 'Payment_Method_Manager' );
 		$payment_method->set_active();
 		$payment_method->save();
+		$payment_method->set_available_by_default( true );
 		EE_Payment_Method_Manager::instance()->set_usable_currencies_on_payment_method( $payment_method );
 		$payment_methods_page->redirect_after_action(1, 'Payment Method', 'activated', array('action' => 'default','payment_method'=>$payment_method->slug()));
 	}

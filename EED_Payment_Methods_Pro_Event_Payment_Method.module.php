@@ -33,13 +33,6 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 	const include_payment_method_postmeta_name_deprecated = 'include_payment_method';
 	
 	/**
-	 * New scope that indicates these payment methods should appear in the payment methods
-	 * metabox on the events page
-	 */
-	const scope_specific_events = 'SPECIFIC_EVENTS';
-
-
-	/**
 	 * @return EED_Payment_Methods_Pro_Event_Payment_Method
 	 */
 	public static function instance() {
@@ -72,18 +65,10 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 			10, 
 			3 
 		);
-		add_action(  
-			'AHEE__EE_Base_Class__save__begin', 
-			array( 'EED_Payment_Methods_Pro_Event_Payment_Method', 'ensure_frontend_or_event_specific_scope' )
-		);
 		EED_Payment_Methods_Pro_Event_Payment_Method::set_hooks_both();
 	}
 
 	public static function set_hooks_both() {
-		add_filter( 
-			'FHEE__EEM_Payment_Method__scopes', 
-			array( 'EED_Payment_Methods_Pro_Event_Payment_Method', 'add_other_scope' ) 
-		);
 		add_action( 
 			'AHEE__EE_Admin_Page_Loader___get_installed_pages_loaded',
 			array( 'EED_Payment_Methods_Pro_Event_Payment_Method', 'remove_no_payment_method_notification' ),
@@ -120,119 +105,15 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 				return $payment_methods;
 			}
 		}
-		$event_ids_for_this_event = EEM_Event::instance()->get_col( array( array( 'Registration.TXN_ID' => $transaction->ID() ) ) );
-		//now grab each of the postmeta with the key "include_payment_method"
-		$event_specific_payment_method_ids = array();
-		foreach( $event_ids_for_this_event as $event_id ){
-			$event_specific_payment_method_ids = array_merge( 
-					$event_specific_payment_method_ids, 
-					EED_Payment_Methods_Pro_Event_Payment_Method::get_payment_methods_for_event( $event_id ) );
-		}
-		//if no event-specific payment method were found, just return the original list of payment methods
-		if( empty( $event_specific_payment_method_ids ) ) {
-			return $payment_methods;
-		}
-		$query_params_for_all_active = EEM_Payment_Method::instance()->get_query_params_for_all_active( $scope );
-		return EEM_Payment_Method::instance()->get_all( array(
-			array(
-				'OR' => array(
-					'AND*normal' => $query_params_for_all_active[ 0 ],
-					'AND*indicated_by_postmeta_IDs' => array( 'PMD_ID' => array( 'IN', $event_specific_payment_method_ids ) ),
-				)
-			)
-		) );
-	}
-	 
-	/**
-	 * Adds another scope which is handy for payment methods that are only for specific events
-	 * @param array $scopes
-	 * @return array
-	 */
-	public static function add_other_scope( $scopes ) {
-		$scopes[ self::scope_specific_events ] = __( 'Only Specific Events (if selecting this, deselect "Front-end Registration Page")', 'event_espresso' );
-		return $scopes;
-	}
-	 
-	/**
-	 * Gets the IDs of teh paymetn methods which are specific to this event
-	 * @param string $event_id
-	 * @return array of payment method IDs
-	 */
-	public static function get_payment_methods_for_event( $event_id ) {
-		$event_specific_pms = get_post_meta( $event_id, EED_Payment_Methods_Pro_Event_Payment_Method::include_payment_method_postmeta_name_deprecated, false );
-		if( empty( $event_specific_pms ) ) {
-			$event_specific_pms = EEM_Payment_Method::instance()->get_col( 
-				array( 
-					array( 
-						'Event.EVT_ID' => $event_id,
-						//verify teh payment method is still event-specific... it might have been deactivated
-						'PMD_scope' => array( 'LIKE', '%' . EED_Payment_Methods_Pro_Event_Payment_Method::scope_specific_events . '%' ) 
-					) 
-				) 
-			);
-		} else { 
-			//ok so we got the old postmeta which had who knows what in it. Swithc it to IDs
-			$event_specific_pms = EEM_Payment_Method::instance()->get_col( 
-					array(
-						array(
-							'OR' => array(
-								'AND*indicated_by_postmeta_admin_names' => array( 'PMD_admin_name' => array( 'IN', $event_specific_pms ) ),
-								'AND*indicated_by_postmeta_frontend_names' => array( 'PMD_name' => array( 'IN', $event_specific_pms ) ),
-								'AND*indicated_by_postmeta_slugs' => array( 'PMD_slug' => array( 'IN', $event_specific_pms ) ),
-								'AND*indicated_by_postmeta_IDs' => array( 'PMD_ID' => array( 'IN', $event_specific_pms ) ),
-							),
-							//verify the payment method is still event-specific, it could have been deactivated
-							'PMD_scope' => array( 'LIKE', '%' . EED_Payment_Methods_Pro_Event_Payment_Method::scope_specific_events . '%' ),
-						)
-					),
-					'PMD_ID' 
-				);
-			delete_post_meta( $event_id, EED_Payment_Methods_Pro_Event_Payment_Method::include_payment_method_postmeta_name_deprecated );
-			$event = EEM_Event::instance()->get_one_by_ID( $event_id );
-			//use method from EEE_Payment_Methods_Pro_Event to add relation to all specified events
-			$event->set_related_payment_methods( $event_specific_pms );
-			//and make sure the payment method is scoped properly (before 
-			foreach( $event_specific_pms as $payment_method_id ) {
-				$pm = EEM_Payment_Method::instance()->get_one_by_ID( $payment_method_id );
-				$scopes = $pm->scope();
-				$scopes[] = EED_Payment_Methods_Pro_Event_Payment_Method::scope_specific_events;
-				$pm->set_scope( $scopes );
-				$pm->save();
-			}
-		}
-		return $event_specific_pms;
-	}
-	 
-	/**
-	 * Just before a payment method is saved, verify they haven't set
-	 * the scope to both cart AND event-specific
-	 * @param EE_Payment_Method $pm
-	 * @return void
-	 */
-	public static function ensure_frontend_or_event_specific_scope( $pm ) {
-		if( $pm instanceof EE_Payment_Method
-			&& in_array( EEM_Payment_Method::scope_cart, $pm->scope() )
-			&& in_array( EED_Payment_Methods_Pro_Event_Payment_Method::scope_specific_events, $pm->scope() ) ) {
-			$new_scope = $pm->scope();
-			$index_of_frontend_scope = array_search( EEM_Payment_Method::scope_cart, $new_scope );
-			//we know we'll find it because we just asserted it was in_array
-			unset( $new_scope[ $index_of_frontend_scope ] );
-			EE_Error::add_attention( 
-				sprintf(
-					esc_html__( 
-						'You have selected to make a payment method available on %1$sall%2$s events and only %1$sspecific%2$s events, which is a contradiction. You probably meant to make it available for only specific events, so it has been updated to be usable from "Only Specific Events". %3$sIf this is not correct, please update the payment method\'s "Usable From" value, and choose either "Front-End Registration Page" or "Only Specific Events", not both.', 
-						'event_espresso' ),
-					'<b>',
-					'</b>',
-					'<br>'
-				),
-				__FILE__,
-				__FUNCTION__,
-				__LINE__
-			);
-			//no need to save because we hooked into JUST before the save
-			$pm->set_scope( $new_scope );
-		}
+		//we do NOT support Multi Event Registration, so its ok to assume a transaction is only for one event
+		$event_id = EEM_Event::instance()->get_var( 
+			array( 
+				array( 'Registration.TXN_ID' => $transaction->ID() ),
+				'limit' => 1
+			) 
+		);
+		//use method from EEME_Payment_Methods_Pro_Payment_Method to get available payment methods
+		return EEM_Payment_Method::instance()->get_payment_methods_available_for_event(  $event_id );
 	}
 	 
 	/**
