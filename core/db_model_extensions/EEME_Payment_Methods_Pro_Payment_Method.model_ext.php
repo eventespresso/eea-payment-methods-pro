@@ -63,7 +63,11 @@ class EEME_Payment_Methods_Pro_Payment_Method extends EEME_Base{
 				//already fetched it from the DB (it was in $payment_methods at the start of this method,
 				//but it got removed) so we're just fetching it from the entity map, not making 
 				//another trip to the DB
-				$payment_methods[ $payment_method_id ] = EEM_Payment_Method::instance()->get_one_by_ID( $payment_method_id );
+				$payment_method_not_normally_available = EEM_Payment_Method::instance()->get_one_by_ID( $payment_method_id );
+				//double-check the payment method is actually usable from the frontend
+				if( in_array( EEM_Payment_Method::scope_cart, $payment_method_not_normally_available->scope() ) ){
+					$payment_methods[ $payment_method_id ] = $payment_method_not_normally_available;
+				}
 			}
 		}
 		return $payment_methods;
