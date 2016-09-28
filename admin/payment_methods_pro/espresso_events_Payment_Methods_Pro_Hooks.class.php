@@ -32,7 +32,7 @@ class espresso_events_Payment_Methods_Pro_Hooks extends EE_Admin_Hooks {
 			0 => array(
 				'page_route' => array( 'edit', 'create_new' ),
 				'func' => 'event_specific_payment_methods',
-				'label' => __('Event-Specific Payment Methods', 'event_espresso'),
+				'label' => __('Payment Methods', 'event_espresso'),
 				'priority' => 'default',
 				'context' => 'side'
 				)
@@ -57,8 +57,7 @@ class espresso_events_Payment_Methods_Pro_Hooks extends EE_Admin_Hooks {
 	
 	public function event_specific_payment_methods( $post ) {
 		$form = $this->_get_event_specific_payment_methods_form( $post->ID );
-		$input = $form->get_input( 'payment_methods' );
-		$form_input_html = $input->get_html_for_input();
+		$form_input_html = $form->get_html_and_js();
 		echo EEH_Template::locate_template( 
 			EE_PAYMENT_METHODS_PRO_ADMIN . 'templates' . DS . 'payment_methods_for_event_metabox.template.php', 
 			array(
@@ -73,26 +72,40 @@ class espresso_events_Payment_Methods_Pro_Hooks extends EE_Admin_Hooks {
 			EEM_Payment_Method::scope_cart,
 			array(
 				'order_by' => array(
-					'PMD_type' => 'ASC'
+					'PMD_admin_name' => 'ASC'
 				)
 			)
 		);
+		$payment_methods_available_for_event = EEM_Payment_Method::instance()->get_payment_methods_available_for_event( $post_id );
 		
-		$options = array();
+		$payment_methods_grouped_by_type = array();
 		foreach( $payment_methods as $payment_method ) {
-			$options[ $payment_method->ID() ] = $payment_method->admin_name();
+			$payment_methods_grouped_by_type[ $payment_method->type() ][ $payment_method->ID()  ] = $payment_method->admin_name();
+		}
+		$subsections = array();
+		foreach( $payment_methods_grouped_by_type as $type => $payment_methods_of_type ) {
+			$options = array(
+				0 => sprintf( __( 'None', 'event_espresso' ), $type )
+			);
+			foreach( $payment_methods_of_type as $PMD_ID => $name ) {
+				$options[ $PMD_ID ] = $name;
+			}
+			$available_for_this_type = array_intersect_key( $payment_methods_available_for_event, $payment_methods_of_type );
+			reset( $available_for_this_type );
+			$default = key( $available_for_this_type );
+			if( empty( $default ) ) {
+				$default = 0;
+			}
+			$subsections[ $type ] = new EE_Radio_Button_Input( 
+				$options,
+				array(
+					'default' => $default
+				)
+			);
 		}
 		$form = new EE_Form_Section_Proper( 
 					array(
-						'subsections' => array(
-							'payment_methods' => new EE_Checkbox_Multi_Input( $options,
-								array(
-									'default' => EEM_Payment_Method::instance()->get_IDS(
-										EEM_Payment_Method::instance()->get_payment_methods_available_for_event( $post_id )
-									)
-								)
-							)
-						),
+						'subsections' => $subsections,
 					)
 				);
 		$form->_construct_finalize( null, 'event_specific_payment_methods');
@@ -109,22 +122,43 @@ class espresso_events_Payment_Methods_Pro_Hooks extends EE_Admin_Hooks {
 		$form = $this->_get_event_specific_payment_methods_form( $event_obj->ID() );
 		$form->receive_form_submission( $data );
 		if( $form->is_valid() ) {
-			$input = $form->get_input( 'payment_methods' );
+			$selected_payment_methods = $this->_get_active_payment_methods_from_form( $form );
 			//use method from EEE_Payment_Methods_Pro_Event to add relation to all specified events
-			$event_obj->set_payment_methods_available_on_event( $input->normalized_value() );
-			$selected_pms = $input->normalized_value();
+			$event_obj->set_payment_methods_available_on_event( $selected_payment_methods );
 			if( 
-				empty( $selected_pms )
-				&& ! EEM_Payment_Method::instance()->get_all_active( EEM_Payment_Method::scope_cart ) 
+				empty( $selected_payment_methods )
 			) {
-				EE_Error::add_attention( 
-					__( 'There are no payment methods activated for this event. Even if it\'s a free event, it\'s still a good idea to have a payment method on it. Please activate a payment method for "Front-End Registration Page" on the payments admin page, or select one in the "Event-Specific Payment Methods" section below.', 'event_espresso' ),
+				EE_Error::add_persistent_admin_notice( 
+					'no_payment_method_on_event',
+					sprintf(
+						__( 'There are no payment methods activated on the event "%1$s" (ID: %2$d). Even if it\'s a free event, it\'s still a good idea to have a payment method on it. Please activate a payment method for "Front-End Registration Page" on the payments admin page, and make sure its selected in the "Payment Methods" section on your event.', 'event_espresso' ),
+						$event_obj->name(),
+						$event_obj->ID()
+					),
 					__FILE__,
 					__FUNCTION__,
 					__LINE__ 
 				);
 			}
 		}
+	}
+	
+	/**
+	 * Determines which payment methods should be active on this event,
+	 * based on the form's data. receive_form_submission() should ahve already
+	 * been called on it, and it should have
+	 * @param EE_Form_Section_Proper $form. 
+	 * @return array of payment method IDs which should be active for this event
+	 */
+	protected function _get_active_payment_methods_from_form( EE_Form_Section_Proper $form ) {
+		$payment_method_ids = array();
+		foreach( $form->inputs() as $input ) {
+			$value = $input->normalized_value();
+			if( $value !== 0 ) {
+				$payment_method_ids[] = $value;
+			}
+		}
+		return $payment_method_ids;
 	}
 	
 	protected function _set_page_object() {
