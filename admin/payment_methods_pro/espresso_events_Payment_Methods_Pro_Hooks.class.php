@@ -146,7 +146,7 @@ class espresso_events_Payment_Methods_Pro_Hooks extends EE_Admin_Hooks {
 	/**
 	 * Determines which payment methods should be active on this event,
 	 * based on the form's data. receive_form_submission() should ahve already
-	 * been called on it, and it should have
+	 * been called on it
 	 * @param EE_Form_Section_Proper $form. 
 	 * @return array of payment method IDs which should be active for this event
 	 */
