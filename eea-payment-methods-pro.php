@@ -1,6 +1,6 @@
 <?php
 /*
-  Plugin Name: Event Espresso - Payment Methods Pro (EE4.6+)
+  Plugin Name: Event Espresso - Payment Methods Pro (EE4.9+)
   Plugin URI: http://www.eventespresso.com
   Description: The Event Espresso Payment Methods Pro gives you more control over which payment methods are available on specific events. Create multiple payment methods of the same type, set whether they're available by default or not, and choose which ones to make available on each event.
   Version: 1.0.0.dev.004
