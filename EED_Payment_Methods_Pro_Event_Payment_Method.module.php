@@ -168,6 +168,20 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 				//if it's unavailable by default, make an exception for it on this event
 				$event_obj->_add_relation_to( $invoice_payment_method->ID(), 'Payment_Method' );
 			}
+			//let folks know we've activated invoice. 
+			//see EED_Payment_Methods_Pro_Event_Payment_Method::ensure_event_have_at_least_one_payment_method()
+			//which enforces that (but enforces it too late to show a message, and possibly enforces it
+			//on the frontend, when we'd really rather not tell site visitors 
+			//that the admin made an oupsie)
+			EE_Error::add_persistent_admin_notice( 
+				'no_payment_methods_on_event',
+				sprintf(
+					__( 'No payment methods were active for the event "%1$s" (event ID %2$s). Even if it\'s a free event, there should always be a payment method available for it. We activated the Invoice Payment Method on the event, on your behalf.', 'event_espresso' ),
+					$event_obj->name(),
+					$event_obj->ID()
+				),
+				true 
+			);
 			$payment_methods[ $invoice_payment_method->ID() ] = $invoice_payment_method;
 		}
 		return $payment_methods;

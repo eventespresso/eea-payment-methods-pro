@@ -129,24 +129,17 @@ class espresso_events_Payment_Methods_Pro_Hooks extends EE_Admin_Hooks {
 			$selected_payment_methods = $this->_get_active_payment_methods_from_form( $form );
 			//use method from EEE_Payment_Methods_Pro_Event to add relation to all specified events
 			$event_obj->set_payment_methods_available_on_event( $selected_payment_methods );
-			//if there are now NO payment methods usable on the event...
-			if( empty( $selected_payment_methods ) ) {
-				//let folks know we've activated invoice. 
-				//see EED_Payment_Methods_Pro_Event_Payment_Method::ensure_event_have_at_least_one_payment_method()
-				//which enforces that (but enforces it too late to show a message, and possibly enforces it
-				//on the frontend, when we'd really rather not tell site visitors 
-				//that the admin made an oupsie)
-				EE_Error::add_attention( 
-					sprintf(
-						__( 'No payment methods were active for the event "%1$s" (event ID %2$s). Even if it\'s a free event, there should always be a payment method available for it. We activated the Invoice Payment Method on the event, on your behalf.', 'event_espresso' ),
-						$event_obj->name(),
-						$event_obj->ID()
-					),
-					__FILE__,
-					__FUNCTION__,
-					__LINE__ 
-				);
-			}
+			//ok and if no payment methods are usable on this event, let the admin know
+			EED_Payment_Methods_Pro_Event_Payment_Method::ensure_event_have_at_least_one_payment_method( 
+				EEM_Payment_Method::instance()->get_all( 
+					array(
+						array( 
+							'PMD_ID' => array( 'IN', $selected_payment_methods )
+						)
+					)
+				), 
+				$event_obj->ID() 
+			);
 		}
 	}
 	
