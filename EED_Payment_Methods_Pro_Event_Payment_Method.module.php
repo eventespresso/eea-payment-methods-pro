@@ -69,12 +69,6 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 	}
 
 	public static function set_hooks_both() {
-		add_action( 
-			'AHEE__EE_Admin_Page_Loader___get_installed_pages_loaded',
-			array( 'EED_Payment_Methods_Pro_Event_Payment_Method', 'remove_no_payment_method_notification' ),
-			10,
-			1
-		);
 	}
 	 
 	
@@ -115,36 +109,6 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 		//use method from EEME_Payment_Methods_Pro_Payment_Method to get available payment methods
 		return EEM_Payment_Method::instance()->get_payment_methods_available_for_event(  $event_id );
 	}
-	 
-	/**
-	 * Removes the default warning about there being no active payment methods
-	 * @param Payments_Admin_Page_Init $admin_page_init_objects
-	 */
-	public static function remove_no_payment_method_notification( $admin_page_init_objects ) {
-		if( isset( $admin_page_init_objects[ 'payments' ] ) 
-			 && $admin_page_init_objects[ 'payments' ] instanceof Payments_Admin_Page_Init 
-		) {
-			remove_filter( 
-				'admin_notices',
-				array( 
-					$admin_page_init_objects[ 'payments' ],
-					'check_payment_gateway_setup'
-				) 
-			);
-		}
-	}
-
-
-
-
-
-
-
-
-
-
-
-
 
 	/**
 	 *    run - initial module setup
