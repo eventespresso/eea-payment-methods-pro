@@ -14,13 +14,13 @@
  * ------------------------------------------------------------------------
  *
  * espresso_events_Registration_Form_Hooks
- * Hooks various messages logic so that it runs on indicated Events Admin Pages.
- * Commenting/docs common to all children classes is found in the EE_Admin_Hooks parent.
+ * Adds hooks for adding a payment methods metabox on the EE admin event editing pages,
+ * and for updating what payment methods should be available on each event.
  *
  *
  * @package			espresso_events_Payment_Methods_Pro_Hooks
  * @subpackage		wp-content/plugins/eea-payment-methods-pro/admin/payment_methods_pro/espresso_events_Payment_Methods_Pro_Hooks.class.php
- * @author				Darren Ethier
+ * @author				Mike Nelson
  *
  * ------------------------------------------------------------------------
  */

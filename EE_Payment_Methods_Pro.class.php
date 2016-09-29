@@ -7,7 +7,7 @@
  * @package			Event Espresso
  * @subpackage		eea-payment-methods-pro
  * @author			    Brent Christensen
- * @ version		 	$VID:$
+ * @ version		 	1.0.0.rc.004
  *
  * ------------------------------------------------------------------------
  */
@@ -32,10 +32,7 @@ Class  EE_Payment_Methods_Pro extends EE_Addon {
 				'version' 					=> EE_PAYMENT_METHODS_PRO_VERSION,
 				'min_core_version' => EE_PAYMENT_METHODS_PRO_CORE_VERSION_REQUIRED,
 				'main_file_path' 		=> EE_PAYMENT_METHODS_PRO_PLUGIN_FILE,
-//				'admin_path' 			=> EE_PAYMENT_METHODS_PRO_ADMIN, note! if we ever put this back in, we can remove the filter below
-				//for FHEE_do_other_page_hooks_espresso_events
 				'autoloader_paths' => array(
-					'EE_Payment_Methods_Pro_Config' 			=> EE_PAYMENT_METHODS_PRO_PATH . 'EE_Payment_Methods_Pro_Config.php',
 					'espresso_events_Payment_Methods_Pro_Hooks' => EE_PAYMENT_METHODS_PRO_ADMIN . 'espresso_events_Payment_Methods_Pro_Hooks.class.php'
 				),
 				'module_paths' 		=> array( 

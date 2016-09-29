@@ -9,16 +9,18 @@
  * @ copyright	(c) 2008-2014 Event Espresso  All Rights Reserved.
  * @ license		http://eventespresso.com/support/terms-conditions/   * see Plugin Licensing *
  * @ link				http://www.eventespresso.com
- * @ version		$VID:$
+ * @ version		1.0.0.rc.004
  *
  * ------------------------------------------------------------------------
  */
 /**
  * Class  EED_Payment_Methods_Pro
+ * This class adds hooks for filtering which payment methods are available
+ * when registering for an event.
  *
  * @package			Event Espresso
  * @subpackage		eea-payment-methods-pro
- * @author 				Brent Christensen
+ * @author 				Mike Nelson
  *
  * ------------------------------------------------------------------------
  */
@@ -31,15 +33,6 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 	 * @deprecated since version 1.0.0
 	 */
 	const include_payment_method_postmeta_name_deprecated = 'include_payment_method';
-	
-	/**
-	 * @return EED_Payment_Methods_Pro_Event_Payment_Method
-	 */
-	public static function instance() {
-		return parent::get_instance( __CLASS__ );
-	}
-
-
 
 	/**
 	 * 	set_hooks - for hooking into EE Core, other modules, etc
@@ -59,16 +52,19 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 	 *  @return 	void
 	 */
 	public static function set_hooks_admin() {
+		EED_Payment_Methods_Pro_Event_Payment_Method::set_hooks_both();
+	}
+
+	public static function set_hooks_both() {
+		//filter what payment methods are available for certain events
 		add_filter( 
 			'FHEE__EEM_Payment_Method__get_all_for_transaction__payment_methods', 
 			array( 'EED_Payment_Methods_Pro_Event_Payment_Method', 'show_specific_payment_methods_for_events' ), 
 			10, 
 			3 
 		);
-		EED_Payment_Methods_Pro_Event_Payment_Method::set_hooks_both();
-	}
-
-	public static function set_hooks_both() {
+		//make sure that, regardless of how an admin goofs up, there is always at least
+		//one payment method available when registering for an event
 		add_filter( 
 			'FHEE__EEME_Payment_Methods_Pro_Payment_Method__ext_get_payment_methods_available_for_event',
 			array( 'EED_Payment_Methods_Pro_Event_Payment_Method', 'ensure_event_have_at_least_one_payment_method' ),

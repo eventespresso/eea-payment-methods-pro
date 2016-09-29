@@ -9,7 +9,7 @@
  * @ copyright	(c) 2008-2014 Event Espresso  All Rights Reserved.
  * @ license		http://eventespresso.com/support/terms-conditions/   * see Plugin Licensing *
  * @ link				http://www.eventespresso.com
- * @ version		$VID:$
+ * @ version		1.0.0.rc.004
  *
  * ------------------------------------------------------------------------
  */
@@ -17,11 +17,11 @@
  * Class  EED_Payment_Methods_Pro_More_Payment_Methods
  * 
  * Modifies the payment methods admin page to allow an admin to
- * activate more payment methods of the same type
+ * activate more payment methods of the same type.
  *
  * @package			Event Espresso
  * @subpackage		eea-payment-methods-pro
- * @author 				Brent Christensen
+ * @author 				Mike
  *
  * ------------------------------------------------------------------------
  */
