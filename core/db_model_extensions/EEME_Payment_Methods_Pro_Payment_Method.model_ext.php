@@ -45,11 +45,7 @@ class EEME_Payment_Methods_Pro_Payment_Method extends EEME_Base{
 		//by "exception" I mean a payment method that's normally available on all events, but
 		//isn't for one of these events; or a payment method that's normally NOT available,
 		//but IS for one of these events.
-		$payment_method_availability_exceptions = $this->_->get_payment_method_availability_exceptions( $event_id );
-		//if no payment method availability exceptions were found, just return the original list of payment methods
-		if( empty( $payment_method_availability_exceptions ) ) {
-			return $payment_methods;
-		}
+		$payment_method_availability_exceptions = (array)$this->_->get_payment_method_availability_exceptions( $event_id );
 		//ok so if a paymetn method is normally available, but it's an exception, then it's now NOT available. Remove it.
 		foreach( $payment_method_availability_exceptions as $payment_method_id => $on_by_default ) {
 			//assume $payment_methods is indexed by primary keys, which currently it is (the only time
@@ -70,7 +66,12 @@ class EEME_Payment_Methods_Pro_Payment_Method extends EEME_Base{
 				}
 			}
 		}
-		return $payment_methods;
+		return apply_filters(
+			'FHEE__EEME_Payment_Methods_Pro_Payment_Method__ext_get_payment_methods_available_for_event',
+			$payment_methods,
+			$event_id,
+			$this
+		);
 	}
 	
 	/**

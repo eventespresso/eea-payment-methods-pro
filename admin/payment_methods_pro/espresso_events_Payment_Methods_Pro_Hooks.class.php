@@ -67,6 +67,11 @@ class espresso_events_Payment_Methods_Pro_Hooks extends EE_Admin_Hooks {
 		
 	}
 	
+	/**
+	 * Gets the form for selecting an event's payment methods
+	 * @param int $post_id
+	 * @return \EE_Form_Section_Proper
+	 */
 	protected function _get_event_specific_payment_methods_form( $post_id ) {
 		$payment_methods = EEM_Payment_Method::instance()->get_all_active( 
 			EEM_Payment_Method::scope_cart,
@@ -77,7 +82,6 @@ class espresso_events_Payment_Methods_Pro_Hooks extends EE_Admin_Hooks {
 			)
 		);
 		$payment_methods_available_for_event = EEM_Payment_Method::instance()->get_payment_methods_available_for_event( $post_id );
-		
 		$payment_methods_grouped_by_type = array();
 		foreach( $payment_methods as $payment_method ) {
 			$payment_methods_grouped_by_type[ $payment_method->type() ][ $payment_method->ID()  ] = $payment_method->admin_name();
@@ -125,13 +129,16 @@ class espresso_events_Payment_Methods_Pro_Hooks extends EE_Admin_Hooks {
 			$selected_payment_methods = $this->_get_active_payment_methods_from_form( $form );
 			//use method from EEE_Payment_Methods_Pro_Event to add relation to all specified events
 			$event_obj->set_payment_methods_available_on_event( $selected_payment_methods );
-			if( 
-				empty( $selected_payment_methods )
-			) {
-				EE_Error::add_persistent_admin_notice( 
-					'no_payment_method_on_event',
+			//if there are now NO payment methods usable on the event...
+			if( empty( $selected_payment_methods ) ) {
+				//let folks know we've activated invoice. 
+				//see EED_Payment_Methods_Pro_Event_Payment_Method::ensure_event_have_at_least_one_payment_method()
+				//which enforces that (but enforces it too late to show a message, and possibly enforces it
+				//on the frontend, when we'd really rather not tell site visitors 
+				//that the admin made an oupsie)
+				EE_Error::add_attention( 
 					sprintf(
-						__( 'There are no payment methods activated on the event "%1$s" (ID: %2$d). Even if it\'s a free event, it\'s still a good idea to have a payment method on it. Please activate a payment method for "Front-End Registration Page" on the payments admin page, and make sure its selected in the "Payment Methods" section on your event.', 'event_espresso' ),
+						__( 'No payment methods were active for the event "%1$s" (event ID %2$s). Even if it\'s a free event, there should always be a payment method available for it. We activated the Invoice Payment Method on the event, on your behalf.', 'event_espresso' ),
 						$event_obj->name(),
 						$event_obj->ID()
 					),

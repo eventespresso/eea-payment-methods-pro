@@ -69,6 +69,12 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 	}
 
 	public static function set_hooks_both() {
+		add_filter( 
+			'FHEE__EEME_Payment_Methods_Pro_Payment_Method__ext_get_payment_methods_available_for_event',
+			array( 'EED_Payment_Methods_Pro_Event_Payment_Method', 'ensure_event_have_at_least_one_payment_method' ),
+			10,
+			2
+		);
 	}
 	 
 	
@@ -108,6 +114,63 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
 		);
 		//use method from EEME_Payment_Methods_Pro_Payment_Method to get available payment methods
 		return EEM_Payment_Method::instance()->get_payment_methods_available_for_event(  $event_id );
+	}
+	
+	/**
+	 * Callback for when we fetch the payment methods on an event. If none are available, 
+	 * we activate invoice and make sure its available.
+	 * @param EE_Payment_Method[] $payment_methods
+	 * @param int $event_id
+	 */
+	public static function ensure_event_have_at_least_one_payment_method( $payment_methods, $event_id ) {
+		if( 
+				empty( $payment_methods )
+		) {
+			$event_obj = EEM_Event::instance()->get_one_by_ID( $event_id );
+			if( ! $event_obj instanceof EE_Event ) {
+				return $payment_methods;
+			}
+			$invoice_payment_method = EEM_Payment_Method::instance()->get_one(
+				EEM_Payment_Method::instance()->get_query_params_for_all_active(
+					EEM_Payment_Method::scope_cart,
+					array(
+						array(
+							'PMD_type' => 'Invoice',
+						)
+					)
+				)
+			);
+			//ok did we find one already active?
+			if( ! $invoice_payment_method ) {
+				//there's none active currently, let's activate one
+				//ok let's just activate one. By default invoice
+				$manager = EE_Registry::instance()->load_lib('EE_Payment_Method_Manager');
+				//ensure an  invoice payment method is active
+				$invoice_payment_method = $manager->activate_a_payment_method_of_type( 'Invoice' );
+				//let's not make it active for other events (we want to make the smallest change
+				//but still have a paymetn method on this event
+				$invoice_payment_method->set_available_by_default( false );
+			}
+			
+			//if it's available by default, ensure we're not making an exception for it on this event
+			if( $invoice_payment_method->is_available_by_default() ) {
+				$deletions = EEM_Extra_Join::instance()->delete( 
+					array(
+						array(
+							'EXJ_first_model_name' => 'Event',
+							'EXJ_first_model_ID' => $event_id,
+							'EXJ_second_model_name' => 'Payment_Method',
+							'EXJ_second_model_ID' => $invoice_payment_method->ID(),
+						)
+					)
+				);
+			} else {
+				//if it's unavailable by default, make an exception for it on this event
+				$event_obj->_add_relation_to( $invoice_payment_method->ID(), 'Payment_Method' );
+			}
+			$payment_methods[ $invoice_payment_method->ID() ] = $invoice_payment_method;
+		}
+		return $payment_methods;
 	}
 
 	/**
