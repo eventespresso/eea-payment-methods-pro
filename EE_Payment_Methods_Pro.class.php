@@ -58,8 +58,17 @@ Class  EE_Payment_Methods_Pro extends EE_Addon {
 		add_filter( 'FHEE_do_other_page_hooks_espresso_events', array( __CLASS__, 'add_admin_hooks_file' ) );
 	}
 	
+	/**
+	 * Add our admin hooks class for modifying the event editing page
+	 * @param array $registered_pages
+	 * @return array
+	 */
 	public static function add_admin_hooks_file( $registered_pages){
-		$registered_pages[] = 'espresso_events_Payment_Methods_Pro_Hooks.class.php';
+		//if PMP got deactivated, or somehow the hooks file didn't get autoloaded after all,
+		//don't reigster our admin hooks file
+		if( class_exists( 'espresso_events_Payment_Methods_Pro_Hooks' ) ) {
+			$registered_pages[] = 'espresso_events_Payment_Methods_Pro_Hooks.class.php';
+		}
 		return $registered_pages;
 	}
 
