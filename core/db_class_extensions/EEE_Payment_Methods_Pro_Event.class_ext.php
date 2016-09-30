@@ -15,18 +15,27 @@ if (!defined('EVENT_ESPRESSO_VERSION')) {
  */
 class EEE_Payment_Methods_Pro_Event extends EEE_Base_Class{
 
-	public function __construct(){
+    /**
+     * EEE_Payment_Methods_Pro_Event constructor.
+     *
+     * @throws EE_Error
+     */
+    public function __construct(){
 		$this->_model_name_extended = 'Event';
 		parent::__construct();
 	}
 
-	/**
-	 * Sets these payment method IDs to be the only paymen tmethods related to this event
-	 * (ie overwrites previous relations)
-	 * @param array $payment_method_ids IDs of related payment methods
-	 * @return boolean
-	 */
-	function ext_set_payment_methods_available_on_event( $payment_method_ids ){
+
+
+    /**
+     * Sets these payment method IDs to be the only payment methods related to this event
+     * (ie overwrites previous relations)
+     *
+     * @param array $payment_method_ids IDs of related payment methods
+     * @return bool
+     * @throws EE_Error
+     */
+    public function ext_set_payment_methods_available_on_event( $payment_method_ids ){
 		//In the DB, we store a row in the extra join
 		//table for each "availability exception", meaning if a payment method is
 		//normally available by default, then we store a row to remember its an exception,and
@@ -35,16 +44,16 @@ class EEE_Payment_Methods_Pro_Event extends EEE_Base_Class{
 		//in the join table to show its an exception, meaning it is available
 		//for this specific event.
 		//In order to do this, we need to remember which payment methods are available by default
-		$payment_method_availabilities = EEM_Payment_Method::instance()->get_payment_method_default_availabilities( 
-			EEM_Payment_Method::instance()->get_query_params_for_all_active( 
-				EEM_Payment_Method::scope_cart 
+		$payment_method_availabilities = EEM_Payment_Method::instance()->get_payment_method_default_availabilities(
+			EEM_Payment_Method::instance()->get_query_params_for_all_active(
+				EEM_Payment_Method::scope_cart
 			)
 		);
 		$availability_exceptions = array();
 		foreach( $payment_method_availabilities as $PMD_ID => $available_by_default ) {
-			if( ( $available_by_default 
+			if( ( $available_by_default
 					&& ! in_array( $PMD_ID, $payment_method_ids )
-				) 
+				)
 				||
 				( ! $available_by_default
 					&& in_array( $PMD_ID, $payment_method_ids )
@@ -53,7 +62,7 @@ class EEE_Payment_Methods_Pro_Event extends EEE_Base_Class{
 				$availability_exceptions[] = $PMD_ID;
 			}
 		}
-		EEM_Extra_Join::instance()->delete( 
+		EEM_Extra_Join::instance()->delete(
 			array(
 				array(
 					'EXJ_first_model_ID' => $this->_->ID(),
