@@ -1,18 +1,5 @@
 <?php if ( ! defined( 'EVENT_ESPRESSO_VERSION' )) { exit('NO direct script access allowed'); }
 /**
- * Event Espresso
- *
- * Event Registration and Management Plugin for Wordpress
- *
- * @package		Event Espresso
- * @author			Seth Shoultes
- * @copyright		(c)2009-2012 Event Espresso All Rights Reserved.
- * @license			http://eventespresso.com/support/terms-conditions/  ** see Plugin Licensing **
- * @link				http://www.eventespresso.com
- * @version			4.0
- *
- * ------------------------------------------------------------------------
- *
  * espresso_events_Registration_Form_Hooks
  * Adds hooks for adding a payment methods metabox on the EE admin event editing pages,
  * and for updating what payment methods should be available on each event.
@@ -20,9 +7,7 @@
  *
  * @package			espresso_events_Payment_Methods_Pro_Hooks
  * @subpackage		wp-content/plugins/eea-payment-methods-pro/admin/payment_methods_pro/espresso_events_Payment_Methods_Pro_Hooks.class.php
- * @author				Mike Nelson
- *
- * ------------------------------------------------------------------------
+ * @author			Mike Nelson
  */
 class espresso_events_Payment_Methods_Pro_Hooks extends EE_Admin_Hooks {
 
@@ -35,7 +20,7 @@ class espresso_events_Payment_Methods_Pro_Hooks extends EE_Admin_Hooks {
 				'label' => __('Payment Methods', 'event_espresso'),
 				'priority' => 'default',
 				'context' => 'side'
-				)
+            )
 		);
 
 		//hook into the handler for saving question groups
@@ -47,33 +32,45 @@ class espresso_events_Payment_Methods_Pro_Hooks extends EE_Admin_Hooks {
 
 
 
-
-
-	public function modify_callbacks( $callbacks ) {
+    /**
+     * @param array $callbacks
+     * @return array
+     */
+    public function modify_callbacks( array $callbacks ) {
 		//now let's add the question group callback
 		$callbacks[] = array( $this, 'update_event_specific_payment_methods' );
 		return $callbacks;
 	}
-	
-	public function event_specific_payment_methods( $post ) {
+
+
+
+    /**
+     * @param WP_Post $post
+     * @throws EE_Error
+     */
+    public function event_specific_payment_methods( WP_Post $post ) {
 		$form = $this->_get_event_specific_payment_methods_form( $post->ID );
-		$form_input_html = $form->get_html_and_js();
-		echo EEH_Template::locate_template( 
-			EE_PAYMENT_METHODS_PRO_ADMIN . 'templates' . DS . 'payment_methods_for_event_metabox.template.php', 
+		$form_input_html = $form->get_html();
+		echo EEH_Template::locate_template(
+			EE_PAYMENT_METHODS_PRO_ADMIN . 'templates' . DS . 'payment_methods_for_event_metabox.template.php',
 			array(
 				'form_input_html' => $form_input_html,
 			)
 		);
-		
+
 	}
-	
-	/**
-	 * Gets the form for selecting an event's payment methods
-	 * @param int $post_id
-	 * @return \EE_Form_Section_Proper
-	 */
+
+
+
+    /**
+     * Gets the form for selecting an event's payment methods
+     *
+     * @param int $post_id
+     * @return EE_Form_Section_Proper
+     * @throws EE_Error
+     */
 	protected function _get_event_specific_payment_methods_form( $post_id ) {
-		$payment_methods = EEM_Payment_Method::instance()->get_all_active( 
+		$payment_methods = EEM_Payment_Method::instance()->get_all_active(
 			EEM_Payment_Method::scope_cart,
 			array(
 				'order_by' => array(
@@ -100,14 +97,14 @@ class espresso_events_Payment_Methods_Pro_Hooks extends EE_Admin_Hooks {
 			if( empty( $default ) ) {
 				$default = 0;
 			}
-			$subsections[ $type ] = new EE_Radio_Button_Input( 
+			$subsections[ $type ] = new EE_Radio_Button_Input(
 				$options,
 				array(
 					'default' => $default
 				)
 			);
 		}
-		$form = new EE_Form_Section_Proper( 
+		$form = new EE_Form_Section_Proper(
 					array(
 						'subsections' => $subsections,
 					)
@@ -115,14 +112,16 @@ class espresso_events_Payment_Methods_Pro_Hooks extends EE_Admin_Hooks {
 		$form->_construct_finalize( null, 'event_specific_payment_methods');
 		return $form;
 	}
-	
-	/**
-	 * 
-	 * @param EE_Event $event_obj
-	 * @param type $data
-	 */
+
+
+
+    /**
+     * @param EE_Event $event_obj
+     * @param array    $data
+     * @throws EE_Error
+     */
 	public function update_event_specific_payment_methods( $event_obj, $data ) {
-		
+
 		$form = $this->_get_event_specific_payment_methods_form( $event_obj->ID() );
 		$form->receive_form_submission( $data );
 		if( $form->is_valid() ) {
@@ -130,24 +129,24 @@ class espresso_events_Payment_Methods_Pro_Hooks extends EE_Admin_Hooks {
 			//use method from EEE_Payment_Methods_Pro_Event to add relation to all specified events
 			$event_obj->set_payment_methods_available_on_event( $selected_payment_methods );
 			//ok and if no payment methods are usable on this event, let the admin know
-			EED_Payment_Methods_Pro_Event_Payment_Method::ensure_event_have_at_least_one_payment_method( 
-				EEM_Payment_Method::instance()->get_all( 
+			EED_Payment_Methods_Pro_Event_Payment_Method::ensure_event_have_at_least_one_payment_method(
+				EEM_Payment_Method::instance()->get_all(
 					array(
-						array( 
+						array(
 							'PMD_ID' => array( 'IN', $selected_payment_methods )
 						)
 					)
-				), 
-				$event_obj->ID() 
+				),
+				$event_obj->ID()
 			);
 		}
 	}
-	
+
 	/**
 	 * Determines which payment methods should be active on this event,
-	 * based on the form's data. receive_form_submission() should ahve already
+	 * based on the form's data. receive_form_submission() should have already
 	 * been called on it
-	 * @param EE_Form_Section_Proper $form. 
+	 * @param EE_Form_Section_Proper $form.
 	 * @return array of payment method IDs which should be active for this event
 	 */
 	protected function _get_active_payment_methods_from_form( EE_Form_Section_Proper $form ) {
@@ -160,9 +159,9 @@ class espresso_events_Payment_Methods_Pro_Hooks extends EE_Admin_Hooks {
 		}
 		return $payment_method_ids;
 	}
-	
+
 	protected function _set_page_object() {
-		
+
 	}
 
 }
