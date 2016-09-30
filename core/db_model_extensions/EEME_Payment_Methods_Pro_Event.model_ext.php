@@ -16,9 +16,13 @@ if (!defined('EVENT_ESPRESSO_VERSION')) {
  *
  */
 class EEME_Payment_Methods_Pro_Event extends EEME_Base{
-	function __construct() {
+
+    /**
+     * @throws \EE_Error
+     */
+    public function __construct() {
 		$this->_model_name_extended = 'Event';
-		
+
 		$this->_extra_relations = array('Payment_Method'=>new EE_HABTM_Any_Relation());
 		parent::__construct();
 	}
