@@ -51,13 +51,14 @@ class EEE_Payment_Methods_Pro_Event extends EEE_Base_Class{
 		);
 		$availability_exceptions = array();
 		foreach( $payment_method_availabilities as $PMD_ID => $available_by_default ) {
-			if( ( $available_by_default
+			if(
+			    (
+			        $available_by_default
 					&& ! in_array( $PMD_ID, $payment_method_ids )
-				)
-				||
-				( ! $available_by_default
+				) || (
+				    ! $available_by_default
 					&& in_array( $PMD_ID, $payment_method_ids )
-					)
+                )
 			) {
 				$availability_exceptions[] = $PMD_ID;
 			}
@@ -71,11 +72,12 @@ class EEE_Payment_Methods_Pro_Event extends EEE_Base_Class{
 				)
 			)
 		);
-		$result = true;
 		foreach( $availability_exceptions as $payment_method_id ) {
-			$result = $this->_->_add_relation_to( $payment_method_id, 'Payment_Method' );
+			$this->_->_add_relation_to( $payment_method_id, 'Payment_Method' );
 		}
-		return $result;
+		// if any of the calls to _add_relation_to() above fail,
+        // then an exception will be thrown, so just return true
+		return true;
 	}
 }
 
