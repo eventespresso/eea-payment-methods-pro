@@ -102,9 +102,12 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
 	public static function add_buttons_onto_payment_settings_forms( $subsections, $payment_method ) {
 		$activate_another_text = sprintf(
 		    __( 'Activate Another %1$s Payment Method', 'event_espresso'),
-            str_replace( '_', ' ', $payment_method->type() )
+            $payment_method->admin_name()
         );
-		$delete_text = sprintf( __( 'Permanently Delete %1$s Payment Method', 'event_espresso'), $payment_method->admin_name() );
+		$delete_text = sprintf(
+		    __( 'Permanently Delete %1$s Payment Method', 'event_espresso'),
+            $payment_method->admin_name()
+        );
 		$url = defined( 'EE_PAYMENTS_ADMIN_URL' ) ? EE_PAYMENTS_ADMIN_URL : '';
         $subsections = EEH_Array::insert_into_array(
             $subsections,
