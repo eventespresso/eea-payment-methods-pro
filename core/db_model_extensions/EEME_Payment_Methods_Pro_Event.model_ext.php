@@ -7,7 +7,8 @@ if (!defined('EVENT_ESPRESSO_VERSION')) {
 /**
  *
  * EEME_Payment_Methods_Pro_Event extends EEM_Event so it's related to payment methods
- * over the flexible extra join table
+ * over the flexible extra join table. See EEME_Payment_Methods_Pro_Payment_Method
+ * for an explanation of what this join table signifies.
  *
  * @package			Event Espresso
  * @subpackage

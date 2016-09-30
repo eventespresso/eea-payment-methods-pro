@@ -7,7 +7,14 @@ if (!defined('EVENT_ESPRESSO_VERSION')) {
 /**
  *
  * EEME_Payment_Methods_Pro_Payment_Method extends EEM_Event so it's related to payment methods
- * over the flexible extra join table
+ * over the flexible extra join table. Entires in this join table indicate an "availability exception".
+ * Eg if payment method 1 is available by default on all events, and there's an 
+ * exception for it on event A (ie, an entry in the extra join table between
+ * payment method 1 and event A), then it is NOT available on event A. It is,
+ * however, available on all other events (unless they likewise are an exception).
+ * The inverse is true too though: if payment method 2 is normally NOT available by default on all events,
+ * but there is an exception for it on event B (ie, again an entry in the extra join
+ * table between payment method 2 and event B), then it IS available on just this event.
  *
  * @package			Event Espresso
  * @subpackage
