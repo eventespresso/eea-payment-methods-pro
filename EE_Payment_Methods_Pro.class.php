@@ -1,28 +1,22 @@
 <?php if ( ! defined( 'EVENT_ESPRESSO_VERSION' )) { exit(); }
+// define the plugin directory path and URL
+define( 'EE_PAYMENT_METHODS_PRO_BASENAME', plugin_basename( EE_PAYMENT_METHODS_PRO_PLUGIN_FILE ) );
+define( 'EE_PAYMENT_METHODS_PRO_PATH', plugin_dir_path( __FILE__ ) );
+define( 'EE_PAYMENT_METHODS_PRO_URL', plugin_dir_url( __FILE__ ) );
+define( 'EE_PAYMENT_METHODS_PRO_ADMIN', EE_PAYMENT_METHODS_PRO_PATH . 'admin' . DS . 'payment_methods_pro' . DS );
+
+
+
 /**
- * ------------------------------------------------------------------------
- *
  * Class  EE_Payment_Methods_Pro
  *
- * @package			Event Espresso
- * @subpackage		eea-payment-methods-pro
- * @author			    Brent Christensen
- * @ version		 	1.0.0.rc.004
- *
- * ------------------------------------------------------------------------
+ * @package     Event Espresso
+ * @subpackage  eea-payment-methods-pro
+ * @author      Mike Nelson
+ * @version     1.0.0.rc.004
  */
-// define the plugin directory path and URL
-define( 'EE_PAYMENT_METHODS_PRO_BASENAME', plugin_basename( EE_PAYMENT_METHODS_PRO_PLUGIN_FILE ));
-define( 'EE_PAYMENT_METHODS_PRO_PATH', plugin_dir_path( __FILE__ ));
-define( 'EE_PAYMENT_METHODS_PRO_URL', plugin_dir_url( __FILE__ ));
-define( 'EE_PAYMENT_METHODS_PRO_ADMIN', EE_PAYMENT_METHODS_PRO_PATH . 'admin' . DS . 'payment_methods_pro' . DS );
 Class  EE_Payment_Methods_Pro extends EE_Addon {
 
-	/**
-	 * class constructor
-	 */
-	public function __construct() {
-	}
 
 	public static function register_addon() {
 		// register addon via Plugin API
@@ -35,7 +29,7 @@ Class  EE_Payment_Methods_Pro extends EE_Addon {
 				'autoloader_paths' => array(
 					'espresso_events_Payment_Methods_Pro_Hooks' => EE_PAYMENT_METHODS_PRO_ADMIN . 'espresso_events_Payment_Methods_Pro_Hooks.class.php'
 				),
-				'module_paths' 		=> array( 
+				'module_paths' 		=> array(
 					EE_PAYMENT_METHODS_PRO_PATH . 'EED_Payment_Methods_Pro_Event_Payment_Method.module.php',
 					EE_PAYMENT_METHODS_PRO_PATH . 'EED_Payment_Methods_Pro_More_Payment_Methods.module.php'),
 //				// if plugin update engine is being used for auto-updates. not needed if PUE is not being used.
@@ -49,12 +43,12 @@ Class  EE_Payment_Methods_Pro extends EE_Addon {
 				'model_extension_paths' => EE_PAYMENT_METHODS_PRO_PATH . 'core' . DS . 'db_model_extensions',
 			)
 		);
-		
+
 		add_action( 'AHEE__EE_System__load_espresso_addons', array( __CLASS__, 'deactivate_if_mer_active' ), 20 );
-		
+
 		add_filter( 'FHEE_do_other_page_hooks_espresso_events', array( __CLASS__, 'add_admin_hooks_file' ) );
 	}
-	
+
 	/**
 	 * Add our admin hooks class for modifying the event editing page
 	 * @param array $registered_pages
@@ -62,7 +56,7 @@ Class  EE_Payment_Methods_Pro extends EE_Addon {
 	 */
 	public static function add_admin_hooks_file( $registered_pages){
 		//if PMP got deactivated, or somehow the hooks file didn't get autoloaded after all,
-		//don't reigster our admin hooks file
+		//don't register our admin hooks file
 		if( class_exists( 'espresso_events_Payment_Methods_Pro_Hooks' ) ) {
 			$registered_pages[] = 'espresso_events_Payment_Methods_Pro_Hooks.class.php';
 		}
@@ -95,13 +89,13 @@ Class  EE_Payment_Methods_Pro extends EE_Addon {
 	 * @return array
 	 */
 	public function plugin_actions( $links, $file ) {
-		if ( $file == EE_PAYMENT_METHODS_PRO_BASENAME ) {
+		if ( $file === EE_PAYMENT_METHODS_PRO_BASENAME ) {
 			// before other links
 			array_unshift( $links, '<a href="admin.php?page=espresso_payment_methods_pro">' . __('Settings') . '</a>' );
 		}
 		return $links;
 	}
-	
+
 	/**
 	 * Don't run MER and payment methods pro together, because if we did that, we'd
 	 * have to only show payment methods usable by ALL selected events, and it's
