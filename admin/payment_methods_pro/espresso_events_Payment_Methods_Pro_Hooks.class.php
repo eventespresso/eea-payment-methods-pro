@@ -86,29 +86,25 @@ class espresso_events_Payment_Methods_Pro_Hooks extends EE_Admin_Hooks {
 		$subsections = array();
 		foreach( $payment_methods_grouped_by_type as $type => $payment_methods_of_type ) {
 			$options = array(
-				0 => sprintf( __( 'None', 'event_espresso' ), $type )
+				0 => __( 'do not use', 'event_espresso' )
 			);
 			foreach( $payment_methods_of_type as $PMD_ID => $name ) {
 				$options[ $PMD_ID ] = $name;
 			}
 			$available_for_this_type = array_intersect_key( $payment_methods_available_for_event, $payment_methods_of_type );
 			reset( $available_for_this_type );
-			$default = key( $available_for_this_type );
-			if( empty( $default ) ) {
-				$default = 0;
-			}
 			$subsections[ $type ] = new EE_Radio_Button_Input(
 				$options,
 				array(
-					'default' => $default
+					'default' => ! empty( $available_for_this_type ) ? key( $available_for_this_type ) : 0
 				)
 			);
 		}
 		$form = new EE_Form_Section_Proper(
-					array(
-						'subsections' => $subsections,
-					)
-				);
+            array(
+                'subsections' => $subsections,
+            )
+        );
 		$form->_construct_finalize( null, 'event_specific_payment_methods');
 		return $form;
 	}
