@@ -100,51 +100,57 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
 	  * @return array
 	  */
 	public static function add_buttons_onto_payment_settings_forms( $subsections, $payment_method ) {
-		$activate_another_text = sprintf( __( 'Activate Another %1$s Payment Method', 'event_espresso'), $payment_method->type() );
+		$activate_another_text = sprintf(
+		    __( 'Activate Another %1$s Payment Method', 'event_espresso'),
+            str_replace( '_', ' ', $payment_method->type() )
+        );
 		$delete_text = sprintf( __( 'Permanently Delete %1$s Payment Method', 'event_espresso'), $payment_method->admin_name() );
-		if( defined( 'EE_PAYMENTS_ADMIN_URL' ) ) {
-			$url = EE_PAYMENTS_ADMIN_URL;
-		} else {
-			$url = '';
-		}
-		$subsections[ 'activate_another' ] = new EE_Form_Section_HTML(
-				EEH_HTML::tr(
-					EEH_HTML::th( sprintf( __( 'Advanced', 'event_espresso'), $payment_method->type() ) ) .
-					EEH_HTML::td(
-						EEH_HTML::link(
-							EE_Admin_Page::add_query_args_and_nonce(
-								array(
-									'action'=>'activate_another_payment_method',
-									'payment_method_type'=>$payment_method->type()
-								),
-								$url
-							),
-							$activate_another_text,
-							$activate_another_text,
-							'activate_another_' . $payment_method->slug(),
-							'espresso-button button-secondary'
-						)
-					)
-				) .
-				EEH_HTML::tr(
-					EEH_HTML::th() .
-					EEH_HTML::td(
-						EEH_HTML::link(
-							EE_Admin_Page::add_query_args_and_nonce(
-								array(
-									'action'=>'delete_payment_method',
-									'payment_method'=>$payment_method->slug()
-								),
-								$url
-							),
-							$delete_text,
-							$delete_text,
-							'delete_' . $payment_method->slug(),
-							'espresso-button button-secondary delete delete-payment-method'
-						)
-					)
-				)
-			);
+		$url = defined( 'EE_PAYMENTS_ADMIN_URL' ) ? EE_PAYMENTS_ADMIN_URL : '';
+        $subsections = EEH_Array::insert_into_array(
+            $subsections,
+            array(
+                'activate_another' => new EE_Form_Section_HTML(
+                    EEH_HTML::tr(
+                        EEH_HTML::th( sprintf( __( 'Advanced', 'event_espresso'), $payment_method->type() ) ) .
+                        EEH_HTML::td(
+                            EEH_HTML::link(
+                                EE_Admin_Page::add_query_args_and_nonce(
+                                    array(
+                                        'action'=>'activate_another_payment_method',
+                                        'payment_method_type'=>$payment_method->type()
+                                    ),
+                                    $url
+                                ),
+                                $activate_another_text,
+                                $activate_another_text,
+                                'activate_another_' . $payment_method->slug(),
+                                'espresso-button button-secondary'
+                            )
+                        )
+                    ) .
+                    EEH_HTML::tr(
+                        EEH_HTML::th() .
+                        EEH_HTML::td(
+                            EEH_HTML::link(
+                                EE_Admin_Page::add_query_args_and_nonce(
+                                    array(
+                                        'action'=>'delete_payment_method',
+                                        'payment_method'=>$payment_method->slug()
+                                    ),
+                                    $url
+                                ),
+                                $delete_text,
+                                $delete_text,
+                                'delete_' . $payment_method->slug(),
+                                'espresso-button button-secondary delete delete-payment-method'
+                            )
+                        )
+                    )
+                )
+            ),
+            // insert new subsection before the form fine print
+            'fine_print_' . $payment_method->slug()
+        );
 		return $subsections;
 	}
 
