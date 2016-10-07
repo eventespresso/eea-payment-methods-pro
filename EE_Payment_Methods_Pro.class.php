@@ -1,12 +1,4 @@
 <?php if ( ! defined( 'EVENT_ESPRESSO_VERSION' )) { exit(); }
-// define the plugin directory path and URL
-define( 'EE_PAYMENT_METHODS_PRO_BASENAME', plugin_basename( EE_PAYMENT_METHODS_PRO_PLUGIN_FILE ) );
-define( 'EE_PAYMENT_METHODS_PRO_PATH', plugin_dir_path( __FILE__ ) );
-define( 'EE_PAYMENT_METHODS_PRO_URL', plugin_dir_url( __FILE__ ) );
-define( 'EE_PAYMENT_METHODS_PRO_ADMIN', EE_PAYMENT_METHODS_PRO_PATH . 'admin' . DS . 'payment_methods_pro' . DS );
-
-
-
 /**
  * Class  EE_Payment_Methods_Pro
  *
