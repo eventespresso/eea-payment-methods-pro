@@ -50,7 +50,7 @@ class espresso_events_Payment_Methods_Pro_Hooks extends EE_Admin_Hooks {
      */
     public function event_specific_payment_methods( WP_Post $post ) {
 		$form = $this->_get_event_specific_payment_methods_form( $post->ID );
-		$form_input_html = $form->get_html();
+		$form_input_html = $form->get_html_and_js();
 		echo EEH_Template::locate_template(
 			EE_PAYMENT_METHODS_PRO_ADMIN . 'templates' . DS . 'payment_methods_for_event_metabox.template.php',
 			array(

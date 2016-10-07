@@ -102,11 +102,11 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
 	public static function add_buttons_onto_payment_settings_forms( $subsections, $payment_method ) {
 		$activate_another_text = sprintf(
 		    __( 'Activate Another %1$s Payment Method', 'event_espresso'),
-            $payment_method->admin_name()
+            $payment_method->type_obj()->pretty_name()
         );
 		$delete_text = sprintf(
 		    __( 'Permanently Delete %1$s Payment Method', 'event_espresso'),
-            $payment_method->admin_name()
+            $payment_method->type_obj()->pretty_name()
         );
 		$url = defined( 'EE_PAYMENTS_ADMIN_URL' ) ? EE_PAYMENTS_ADMIN_URL : '';
         $subsections = EEH_Array::insert_into_array(
@@ -374,8 +374,15 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
                 $success = true;
             }
         }
-        $payment_methods_page->redirect_after_action( $success, 'Payment Method', 'activated',
-            array( 'action' => 'default', 'payment_method' => $pm_slug ) );
+        $payment_methods_page->redirect_after_action( 
+			$success, 
+			'Payment Method', 
+			'activated',
+            array( 
+				'action' => 'default', 
+				'payment_method' => $pm_slug 
+			) 
+		);
     }
 
 
@@ -417,8 +424,12 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
                 $success = true;
             }
         }
-        $payment_methods_page->redirect_after_action( $success, 'Payment Method', 'deleted',
-            array( 'action' => 'default' ) );
+        $payment_methods_page->redirect_after_action( 
+			$success, 
+			'Payment Method', 
+			'deleted',
+            array( 'action' => 'default' ) 
+		);
     }
 
 
@@ -450,8 +461,15 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
             $payment_method->save();
             $payment_method->set_available_by_default( true );
             EE_Payment_Method_Manager::instance()->set_usable_currencies_on_payment_method( $payment_method );
-            $payment_methods_page->redirect_after_action( 1, 'Payment Method', 'activated',
-                array( 'action' => 'default', 'payment_method' => $payment_method->slug() ) );
+            $payment_methods_page->redirect_after_action( 
+				1, 
+				'Payment Method', 
+				'activated',
+                array( 
+					'action' => 'default', 
+					'payment_method' => $payment_method->slug() 
+				) 
+			);
         }
         //if the slug didn't find a payment method, fallback to the old way of looking
         //if the payment method slug
@@ -461,11 +479,22 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
         $payment_method = EE_Payment_Method_Manager::instance()
                                                    ->activate_a_payment_method_of_type( $payment_method_type );
         if ( $payment_method instanceof EE_Payment_Method ) {
-            $payment_methods_page->redirect_after_action( 1, 'Payment Method', 'activated',
-                array( 'action' => 'default', 'payment_method' => $payment_method->slug() ) );
+            $payment_methods_page->redirect_after_action( 
+				1,
+				'Payment Method',
+				'activated',
+                array( 
+					'action' => 'default', 
+					'payment_method' => $payment_method->slug() 
+				) 
+			);
         } else {
-            $payment_methods_page->redirect_after_action( false, 'Payment Method', 'activated',
-                array( 'action' => 'default' ) );
+            $payment_methods_page->redirect_after_action( 
+				false, 
+				'Payment Method', 
+				'activated',
+                array( 'action' => 'default' ) 
+			);
         }
     }
 

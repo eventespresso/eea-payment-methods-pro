@@ -29,7 +29,7 @@ class EEE_Payment_Methods_Pro_Payment_Method extends EEE_Base_Class{
 
     /**
      * Sets these payment method IDs to be the only payment methods related to this event
-     * (ie overwrites previous relations)
+     * (ie overwrites previous relations) 
      *
      * @param boolean $on_by_default IDs of related payment methods
      * @return void
