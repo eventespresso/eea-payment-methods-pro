@@ -106,7 +106,7 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
         );
 		$delete_text = sprintf(
 		    __( 'Permanently Delete %1$s Payment Method', 'event_espresso'),
-            $payment_method->type_obj()->pretty_name()
+            $payment_method->admin_name()
         );
 		$url = defined( 'EE_PAYMENTS_ADMIN_URL' ) ? EE_PAYMENTS_ADMIN_URL : '';
         $subsections = EEH_Array::insert_into_array(
