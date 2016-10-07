@@ -39,10 +39,6 @@
 define( 'EE_PAYMENT_METHODS_PRO_CORE_VERSION_REQUIRED', '4.9.14.rc.0000' );
 define( 'EE_PAYMENT_METHODS_PRO_VERSION', '1.0.0.dev.004' );
 define( 'EE_PAYMENT_METHODS_PRO_PLUGIN_FILE',  __FILE__ );
-define( 'EE_PAYMENT_METHODS_PRO_BASENAME', plugin_basename( EE_PAYMENT_METHODS_PRO_PLUGIN_FILE ) );
-define( 'EE_PAYMENT_METHODS_PRO_PATH', plugin_dir_path( __FILE__ ) );
-define( 'EE_PAYMENT_METHODS_PRO_URL', plugin_dir_url( __FILE__ ) );
-define( 'EE_PAYMENT_METHODS_PRO_ADMIN', EE_PAYMENT_METHODS_PRO_PATH . 'admin' . DS . 'payment_methods_pro' . DS );
 function load_espresso_payment_methods_pro() {
 if ( class_exists( 'EE_Addon' )) {
 	// payment_methods_pro version
