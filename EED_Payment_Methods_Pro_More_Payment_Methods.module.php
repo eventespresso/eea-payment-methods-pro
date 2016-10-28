@@ -74,7 +74,7 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
 			10,
 			1
 		);
-		//make sure it gets autofilled correctly
+		// make sure it gets autofilled correctly
 		add_filter(
 			'FHEE__EE_Model_Form_Section__populate_model_obj',
 			array( 'EED_Payment_Methods_Pro_More_Payment_Methods', 'populate_primary_input_too' ),
@@ -225,6 +225,14 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
 		return array(
             new EE_Form_Section_HTML(
                 EEH_HTML::tr(
+                    EEH_HTML::tr(
+                        EEH_HTML::td( $payment_method->type_obj()->introductory_html(),
+                            '',
+                            '',
+                            '',
+                            'colspan="2"'
+                        )
+                    ) .
                     EEH_HTML::th(
                         EEH_HTML::label( __( 'Click to Activate ', 'event_espresso' ))
                     ) .
