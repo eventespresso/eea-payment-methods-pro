@@ -90,6 +90,9 @@ class EEE_Payment_Methods_Pro_Payment_Method extends EEE_Base_Class{
      * @throws EE_Error
      */
 	public function ext_is_available_by_default(){
+        //if there is no extra meta row for "on_by_default", it was probably activated before PMP,
+        //and in that case it WAS available by default on all events, so maintain that behaviour.
+        //Logic effectively duplicated in EEME_Payment_Methods_Pro_Payment_Method::ext_get_payment_method_default_availabilities()
 		$string_val = $this->_->get_extra_meta( EED_Payment_Methods_Pro_More_Payment_Methods::on_by_default_meta_key, true, '1' );
 		if( $string_val === '1' ) {
 			return true;

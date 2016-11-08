@@ -103,17 +103,28 @@ class EEME_Payment_Methods_Pro_Payment_Method extends EEME_Base{
      * @throws EE_Error
      */
 	public function ext_get_payment_method_default_availabilities( $query_params ) {
-		//make sure we're also grabbing the availability extra meta
-		$query_params[0]['Extra_Meta.EXM_key'] = EED_Payment_Methods_Pro_More_Payment_Methods::on_by_default_meta_key;
-		$results = (array) $this->_->get_all_wpdb_results(
-			$query_params,
-			ARRAY_A,
-			'Payment_Method.PMD_ID as PMD_ID, Extra_Meta.EXM_value as available_by_default'
-		);
-		$mapping = array();
-		foreach( $results as $row ) {
-			$mapping[ $row['PMD_ID'] ] = $row['available_by_default'] === '1' ? true : false;
-		}
+		$payment_method_ids = (array) $this->_->get_col( $query_params );
+        $availabilities = EEM_Extra_Meta::instance()->get_all(
+            array(
+                array(
+                    'EXM_key' => EED_Payment_Methods_Pro_More_Payment_Methods::on_by_default_meta_key
+                )
+            )
+        );
+        $mapping = array();
+        foreach( $payment_method_ids as $payment_method_id ) {
+            //if there is no extra meta row for "on_by_default", it was probably activated before PMP,
+            //and in that case it WAS available by default on all events, so maintain that behaviour.
+            //Logic effectively duplicated in EEE_Payment_Methods_Pro_Payment_Method::ext_is_available_by_default()
+            $available = true;
+            foreach( $availabilities as $extra_meta_obj ) {
+                if( $extra_meta_obj->get('OBJ_ID') === intval( $payment_method_id ) ) {
+                    $available = $extra_meta_obj->get('EXM_value') === '1' ? true : false;
+                    break;
+                }
+            }
+            $mapping[ $payment_method_id ] = $available;
+        }
 		return $mapping;
 	}
 
@@ -127,25 +138,25 @@ class EEME_Payment_Methods_Pro_Payment_Method extends EEME_Base{
      * @throws EE_Error
      */
 	public function ext_get_payment_method_availability_exceptions( $event_id ) {
-		//no post meta. That's fine. So let's look for rows in the extra_join table, indicating they're an exception
+		//So let's look for rows in the extra_join table, indicating they're an exception
 		//(by "exception" I mean a payment method that's normally available but isn't for this event, or
 		//a payment method which normally is NOT available, but is for this event).
-		$pm_exceptions = (array) $this->_->get_all_wpdb_results(
+		$pm_exceptions = (array) $this->_->get_col(
 			array(
 				array(
-					'Event.EVT_ID' => $event_id,
-					//we also want to know whether they're normally available or not
-					'Extra_Meta.EXM_key' => EED_Payment_Methods_Pro_More_Payment_Methods::on_by_default_meta_key,
+					'Event.EVT_ID' => $event_id
 				),
-			),
-			ARRAY_A,
-			'Payment_Method.PMD_ID as PMD_ID, Extra_Meta.EXM_value AS on_by_default'
+			)
 		);
-		$pm_ids_on_by_default = array();
-		foreach( $pm_exceptions as $pm_exception ) {
-			$pm_ids_on_by_default[ $pm_exception[ 'PMD_ID' ] ] = $pm_exception['on_by_default'];
-		}
-		return $pm_ids_on_by_default;
+        //now that we know all the payment methods that are exceptions for this event, find whether they're
+        //normally available or not.
+        return $this->ext_get_payment_method_default_availabilities(
+            array(
+                array(
+                    'PMD_ID' => array('IN', $pm_exceptions )
+                )
+            )
+        );
 	}
 }
 
