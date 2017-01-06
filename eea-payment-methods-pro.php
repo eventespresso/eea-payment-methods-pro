@@ -36,7 +36,7 @@
  *
  * ------------------------------------------------------------------------
  */
-define( 'EE_PAYMENT_METHODS_PRO_CORE_VERSION_REQUIRED', '4.8.26.rc.0000' );
+define( 'EE_PAYMENT_METHODS_PRO_CORE_VERSION_REQUIRED', '4.9.26.rc.000' );
 define( 'EE_PAYMENT_METHODS_PRO_VERSION', '1.0.0.dev.003' );
 define( 'EE_PAYMENT_METHODS_PRO_PLUGIN_FILE',  __FILE__ );
 function load_espresso_payment_methods_pro() {
