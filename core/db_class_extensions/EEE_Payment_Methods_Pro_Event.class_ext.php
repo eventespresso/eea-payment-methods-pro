@@ -54,7 +54,7 @@ class EEE_Payment_Methods_Pro_Event extends EEE_Base_Class{
 			if(
 			    (
 			        $available_by_default
-					&& ! in_array( $PMD_ID, $payment_method_ids )
+					&& ! in_array( $PMD_ID, $payment_method_ids, true )
 				) || (
 				    ! $available_by_default
 					&& in_array( $PMD_ID, $payment_method_ids )

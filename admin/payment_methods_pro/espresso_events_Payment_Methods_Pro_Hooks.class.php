@@ -96,7 +96,8 @@ class espresso_events_Payment_Methods_Pro_Hooks extends EE_Admin_Hooks {
 			$subsections[ $type ] = new EE_Radio_Button_Input(
 				$options,
 				array(
-					'default' => ! empty( $available_for_this_type ) ? key( $available_for_this_type ) : 0
+					'default' => ! empty( $available_for_this_type ) ? key( $available_for_this_type ) : 0,
+                    'normalization_strategy' => new EE_Int_Normalization(),
 				)
 			);
 		}
