@@ -69,7 +69,7 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
 		);
 		//add EED_Payment_Methods_Pro_More_Payment_Methods::on_by_default_meta_key to all payment method forms
 		add_action(
-			'AHEE__EE_Form_Section_Proper___construct_finalize__end',
+			'AHEE__EE_Form_Input_Base___construct__before_construct_finalize_called',
 			array( 'EED_Payment_Methods_Pro_More_Payment_Methods', 'add_primary_input_to_payment_method_forms' ),
 			10,
 			1
