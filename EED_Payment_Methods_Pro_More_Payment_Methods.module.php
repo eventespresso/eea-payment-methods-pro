@@ -114,7 +114,7 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
             array(
                 'activate_another' => new EE_Form_Section_HTML(
                     EEH_HTML::tr(
-                        EEH_HTML::th( sprintf( __( 'Advanced', 'event_espresso'), $payment_method->type() ) ) .
+                        EEH_HTML::th() .
                         EEH_HTML::td(
                             EEH_HTML::link(
                                 EE_Admin_Page::add_query_args_and_nonce(
@@ -130,7 +130,16 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
                                 'espresso-button button-secondary'
                             )
                         )
-                    ) .
+                    )
+                )
+            )
+            // insert at very beginning
+        );
+
+        $subsections = EEH_Array::insert_into_array(
+            $subsections,
+            array(
+                'permanently_delete' => new EE_Form_Section_HTML(
                     EEH_HTML::tr(
                         EEH_HTML::th() .
                         EEH_HTML::td(
@@ -152,7 +161,7 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
                 )
             ),
             // insert new subsection before the form fine print
-            'fine_print_' . $payment_method->slug()
+            'fine_print'
         );
 		return $subsections;
 	}
