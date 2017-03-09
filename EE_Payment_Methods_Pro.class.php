@@ -79,8 +79,7 @@ Class  EE_Payment_Methods_Pro extends EE_Addon {
 	}
 
 
-
-	/**
+    /**
 	 * plugin_actions
 	 *
 	 * Add a settings link to the Plugins page, so people can go straight from the plugin page to the settings page.
