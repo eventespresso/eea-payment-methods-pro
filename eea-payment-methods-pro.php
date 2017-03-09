@@ -38,14 +38,15 @@
  */
 define( 'EE_PAYMENT_METHODS_PRO_CORE_VERSION_REQUIRED', '4.9.32.rc.0000' );
 define( 'EE_PAYMENT_METHODS_PRO_VERSION', '1.0.0.dev.004' );
-define( 'EE_PAYMENT_METHODS_PRO_PLUGIN_FILE',  __FILE__ );
+define( 'EE_PAYMENT_METHODS_PRO_PLUGIN_FILE', __FILE__ );
 function load_espresso_payment_methods_pro() {
-if ( class_exists( 'EE_Addon' )) {
-	// payment_methods_pro version
-	require_once ( plugin_dir_path( __FILE__ ) . 'EE_Payment_Methods_Pro.class.php' );
-	EE_Payment_Methods_Pro::register_addon();
+    if ( class_exists( 'EE_Addon' ) ) {
+        // payment_methods_pro version
+        require_once( plugin_dir_path( __FILE__ ) . 'EE_Payment_Methods_Pro.class.php' );
+        EE_Payment_Methods_Pro::register_addon();
+    }
 }
-}
+
 add_action( 'AHEE__EE_System__load_espresso_addons', 'load_espresso_payment_methods_pro' );
 
 // End of file espresso_payment_methods_pro.php

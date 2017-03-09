@@ -1,71 +1,75 @@
 <?php
-
-if (!defined('EVENT_ESPRESSO_VERSION')) {
-	exit('No direct script access allowed');
+if ( ! defined( 'EVENT_ESPRESSO_VERSION' ) ) {
+    exit( 'No direct script access allowed' );
 }
 
+
+
 /**
- *
  * Adds functionality to payment methods
  *
- * @package			Event Espresso
+ * @package               Event Espresso
  * @subpackage
- * @author				Mike Nelson
- *
+ * @author                Mike Nelson
  */
-class EEE_Payment_Methods_Pro_Payment_Method extends EEE_Base_Class{
+class EEE_Payment_Methods_Pro_Payment_Method extends EEE_Base_Class {
 
     /**
      * EEE_Payment_Methods_Pro_Payment_Method constructor.
      *
      * @throws EE_Error
      */
-    public function __construct(){
-		$this->_model_name_extended = 'Payment_Method';
-		parent::__construct();
-	}
+    public function __construct() {
+        $this->_model_name_extended = 'Payment_Method';
+        parent::__construct();
+    }
 
 
 
     /**
      * Sets these payment method IDs to be the only payment methods related to this event
-     * (ie overwrites previous relations) 
+     * (ie overwrites previous relations)
      *
      * @param boolean $on_by_default IDs of related payment methods
+     *
      * @return void
      * @throws EE_Error
      */
-	public function ext_set_available_by_default( $on_by_default ){
-		//if this payment method is being set to being on by default,
-		//we need to ensure there are no other payment methods are on by default
-		//(we think folks will only want one payment method of a given type
-		//active on an event at a time; but they're allowed to have lots of
-		//inactive ones of course)
-		//get the previous value
-		$previous_default_availability = $this->_->is_available_by_default();
-		if( ! $previous_default_availability
-			&& $on_by_default ) {
-			//ok get the previous available-by-default payment method of this type (there should only be one at a time)
+    public function ext_set_available_by_default( $on_by_default ) {
+        //if this payment method is being set to being on by default,
+        //we need to ensure there are no other payment methods are on by default
+        //(we think folks will only want one payment method of a given type
+        //active on an event at a time; but they're allowed to have lots of
+        //inactive ones of course)
+        //get the previous value
+        $previous_default_availability = $this->_->is_available_by_default();
+        if ( ! $previous_default_availability
+             && $on_by_default
+        ) {
+            //ok get the previous available-by-default payment method of this type (there should only be one at a time)
             //we'd like to use a DB query to fetch all the available-by-default ones
             //but ones which don't have the extra meta set are also implied to be available-by-default
             //and in order for MySQL to find those, it would need to use the extra meta key on the join clause
             //which currently our models don't handle
             //so instead, fetch all other payment methods of this type, and then we'll just loop over them
-			$other_pms_of_this_type = EEM_Payment_Method::instance()->get_all(
-				array(
-					array(
-						'PMD_type' => $this->_->type(),
-						'Extra_Meta.OBJ_ID' => array( '!=', $this->_->ID() )
-					)
-				)
-			);
+            $other_pms_of_this_type = EEM_Payment_Method::instance()->get_all(
+                array(
+                    array(
+                        'PMD_type'          => $this->_->type(),
+                        'Extra_Meta.OBJ_ID' => array( '!=', $this->_->ID() ),
+                    ),
+                )
+            );
             //loop over all these PMs, looking for a different one that's on by default
-			foreach( $other_pms_of_this_type as $other_pm ) {
-				//we'd like to just call $previous_default_payment_method->set_available_by_default( false );
-				//but model extensions don't allow for recursion currently. So do the gist of it:
-				//update its extra meta
-                if( $other_pm->get_extra_meta( EED_Payment_Methods_Pro_More_Payment_Methods::on_by_default_meta_key, true, true ) ) {
-                    $other_pm->update_extra_meta( EED_Payment_Methods_Pro_More_Payment_Methods::on_by_default_meta_key, false );
+            foreach ( $other_pms_of_this_type as $other_pm ) {
+                //we'd like to just call $previous_default_payment_method->set_available_by_default( false );
+                //but model extensions don't allow for recursion currently. So do the gist of it:
+                //update its extra meta
+                if ( $other_pm->get_extra_meta( EED_Payment_Methods_Pro_More_Payment_Methods::on_by_default_meta_key,
+                    true, true )
+                ) {
+                    $other_pm->update_extra_meta( EED_Payment_Methods_Pro_More_Payment_Methods::on_by_default_meta_key,
+                        false );
                     //and reassign exceptions to the new default
                     EEM_Extra_Join::instance()->update(
                         array(
@@ -73,10 +77,10 @@ class EEE_Payment_Methods_Pro_Payment_Method extends EEE_Base_Class{
                         ),
                         array(
                             array(
-                                'EXJ_first_model_name' => 'Event',
+                                'EXJ_first_model_name'  => 'Event',
                                 'EXJ_second_model_name' => 'Payment_Method',
-                                'EXJ_second_model_ID' => $other_pm->ID(),
-                            )
+                                'EXJ_second_model_ID'   => $other_pm->ID(),
+                            ),
                         )
                     );
                     //that might have made some double-exceptions, remove them
@@ -84,7 +88,7 @@ class EEE_Payment_Methods_Pro_Payment_Method extends EEE_Base_Class{
                     //but now that $this->_ is available by default, there is no need for it to be an exception)
                     $exj_table = EEM_Extra_Join::instance()->table();
                     global $wpdb;
-                    $wpdb->query("DELETE t
+                    $wpdb->query( "DELETE t
                         FROM {$exj_table} t
                         INNER JOIN (SELECT EXJ_ID, EXJ_first_model_ID, EXJ_first_model_name, EXJ_second_model_ID, EXJ_second_model_name
                                    FROM   {$exj_table}
@@ -96,16 +100,18 @@ class EEE_Payment_Methods_Pro_Payment_Method extends EEE_Base_Class{
                                AND t.EXJ_second_model_name = d.EXJ_second_model_name;"
                     );
                 }
-			}
-		}elseif( $previous_default_availability
-                 && ! $on_by_default ) {
-		    //this payment method WAS available by default, but now it won't be.
+            }
+        } elseif ( $previous_default_availability
+                   && ! $on_by_default
+        ) {
+            //this payment method WAS available by default, but now it won't be.
             //so for events where it was in use because it was default: set none available for that event by not adding an exception
             //for events where it wasn't in use because it was an exception: stay that way (remove those exceptions)
             $this->_->remove_availability_exceptions();
         }
-		$this->_->update_extra_meta( EED_Payment_Methods_Pro_More_Payment_Methods::on_by_default_meta_key, $on_by_default );
-	}
+        $this->_->update_extra_meta( EED_Payment_Methods_Pro_More_Payment_Methods::on_by_default_meta_key,
+            $on_by_default );
+    }
 
 
 
@@ -115,17 +121,18 @@ class EEE_Payment_Methods_Pro_Payment_Method extends EEE_Base_Class{
      * @return bool
      * @throws EE_Error
      */
-	public function ext_is_available_by_default(){
+    public function ext_is_available_by_default() {
         //if there is no extra meta row for "on_by_default", it was probably activated before PMP,
         //and in that case it WAS available by default on all events, so maintain that behaviour.
         //Logic effectively duplicated in EEME_Payment_Methods_Pro_Payment_Method::ext_get_payment_method_default_availabilities()
-		$string_val = $this->_->get_extra_meta( EED_Payment_Methods_Pro_More_Payment_Methods::on_by_default_meta_key, true, '1' );
-		if( $string_val === '1' ) {
-			return true;
-		} else {
-			return false;
-		}
-	}
+        $string_val = $this->_->get_extra_meta( EED_Payment_Methods_Pro_More_Payment_Methods::on_by_default_meta_key,
+            true, '1' );
+        if ( $string_val === '1' ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
 
 
@@ -137,17 +144,17 @@ class EEE_Payment_Methods_Pro_Payment_Method extends EEE_Base_Class{
      * @return int the number of availability exceptions that were deleted
      * @throws EE_Error
      */
-	public function ext_remove_availability_exceptions() {
-		return EEM_Extra_Join::instance()->delete(
-			array(
-				array(
-					'EXJ_first_model_name' => 'Event',
-					'EXJ_second_model_name' => 'Payment_Method',
-					'EXJ_second_model_ID' => $this->_->ID(),
-				)
-			)
-		);
-	}
+    public function ext_remove_availability_exceptions() {
+        return EEM_Extra_Join::instance()->delete(
+            array(
+                array(
+                    'EXJ_first_model_name'  => 'Event',
+                    'EXJ_second_model_name' => 'Payment_Method',
+                    'EXJ_second_model_ID'   => $this->_->ID(),
+                ),
+            )
+        );
+    }
 }
 
 // End of file EEE_Mock_Attendee.php
