@@ -1,9 +1,9 @@
 <?php
 /*
-  Plugin Name: Event Espresso - Payment Methods Pro (EE4.6+)
+  Plugin Name: Event Espresso - Payment Methods Pro (EE4.9.32+)
   Plugin URI: http://www.eventespresso.com
-  Description: The Event Espresso Payment Methods Pro allow you to make some payment methods ONLY be usable when registering for specific events, and allows you to activate multiple payment methods of the same type. Just activate a payment method, then update it so it's only usable "for specified events", then add a postmeta/custom field to the event you want it to be used on with the key "include_payment_method", and the value of the payment method's ADMIN name, et voila! You can repeat this for other events, and for other payment methods on the same event by adding more postmetas/custom fields also named "include_payment_method".
-  Version: 1.0.0.dev.003
+  Description: The Event Espresso Payment Methods Pro gives you more control over which payment methods are available on specific events. Create multiple payment methods of the same type, set whether they're available by default or not, and choose which ones to make available on each event.
+  Version: 1.0.0.dev.004
   Author: Event Espresso
   Author URI: http://www.eventespresso.com
   Copyright 2014 Event Espresso (email : support@eventespresso.com)
@@ -36,16 +36,17 @@
  *
  * ------------------------------------------------------------------------
  */
-define( 'EE_PAYMENT_METHODS_PRO_CORE_VERSION_REQUIRED', '4.8.26.rc.0000' );
-define( 'EE_PAYMENT_METHODS_PRO_VERSION', '1.0.0.dev.003' );
-define( 'EE_PAYMENT_METHODS_PRO_PLUGIN_FILE',  __FILE__ );
+define( 'EE_PAYMENT_METHODS_PRO_CORE_VERSION_REQUIRED', '4.9.32.rc.0000' );
+define( 'EE_PAYMENT_METHODS_PRO_VERSION', '1.0.0.dev.004' );
+define( 'EE_PAYMENT_METHODS_PRO_PLUGIN_FILE', __FILE__ );
 function load_espresso_payment_methods_pro() {
-if ( class_exists( 'EE_Addon' )) {
-	// payment_methods_pro version
-	require_once ( plugin_dir_path( __FILE__ ) . 'EE_Payment_Methods_Pro.class.php' );
-	EE_Payment_Methods_Pro::register_addon();
+    if ( class_exists( 'EE_Addon' ) ) {
+        // payment_methods_pro version
+        require_once( plugin_dir_path( __FILE__ ) . 'EE_Payment_Methods_Pro.class.php' );
+        EE_Payment_Methods_Pro::register_addon();
+    }
 }
-}
+
 add_action( 'AHEE__EE_System__load_espresso_addons', 'load_espresso_payment_methods_pro' );
 
 // End of file espresso_payment_methods_pro.php
