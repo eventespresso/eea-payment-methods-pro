@@ -5,13 +5,13 @@
 [![License](https://img.shields.io/badge/License-GPLv2-blue.svg?style=plastic)](https://www.gnu.org/licenses/gpl-2.0.html)
 [![License](https://img.shields.io/badge/Llama-Approved-ff69b4.svg?style=plastic)](http://eventespresso.com/)
 
-###Enable specific payment methods for specific events
+### Enable specific payment methods for specific events
 
 The Event Espresso Payment Methods Pro add-on gives you more control of payment methods. You can use it to activate multiple payment methods of the same type, set one as default, but control which is available on specific events.
 
 This plugin/add-on needs to be uploaded to the "/wp-content/plugins/" directory on your server or installed using the WordPress plugins installer.
 
-#####Currently the Payment Methods Pro add-on requires the Event Espresso core version 4.6.29.p or higher in order to operate.
+##### Currently the Payment Methods Pro add-on requires the Event Espresso core version 4.6.29.p or higher in order to operate.
 
 > This README.md file is targeted for display with our Github repo.
 
