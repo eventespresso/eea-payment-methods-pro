@@ -112,6 +112,7 @@ Class  EE_Payment_Methods_Pro extends EE_Addon {
      */
     public static function deactivate_if_mer_active() {
         if ( class_exists( 'EE_Multi_Event_Registration' )
+             && isset(EE_Registry::instance()->addons->EE_Multi_Event_Registration)
              && EE_Registry::instance()->addons->EE_Multi_Event_Registration instanceof EE_Multi_Event_Registration
         ) {
             if ( ! function_exists( 'deactivate_plugins' ) ) {
