@@ -67,6 +67,13 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
             10,
             2
         );
+        //make sure shortcodes use the selected invoice payment method for the transaction, instead of always the default invoice payment method
+        add_filter(
+            'FHEE__EE_Transaction_Shortcodes__get_payment_method__default',
+            array( 'EED_Payment_Methods_Pro_Event_Payment_Method', 'get_invoice_pm_for_transaction' ),
+            10,
+            2
+        );
     }
 
 
@@ -183,6 +190,29 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module {
         }
 
         return $payment_methods;
+    }
+
+    /**
+     * When getting the invoice payment method in a shortcode, instead
+     * @param EE_Payment_Method|null $payment_method
+     * @param EE_Transaction|null $transaction
+     * @return EE_Payment_Method|null
+     */
+	public static function get_invoice_pm_for_transaction( $payment_method, $transaction ) {
+        if( $transaction instanceof EE_Transaction ) {
+            $primary_reg = $transaction->primary_registration();
+            if( $primary_reg instanceof EE_Registration ) {
+                $event_id = $primary_reg->event_ID();
+                $payment_methods_for_event = EEM_Payment_Method::instance()->get_payment_methods_available_for_event( $event_id );
+                foreach( $payment_methods_for_event as $payment_method_on_event ) {
+                    if( $payment_method_on_event instanceof EE_Payment_Method
+                        && $payment_method_on_event->type() === 'Invoice' ) {
+                            return $payment_method_on_event;
+                    } 
+                }
+            }
+        }
+        return $payment_method;
     }
 
     /**
