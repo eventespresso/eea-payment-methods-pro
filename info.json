@@ -1,18 +1,18 @@
 {
-	"versionFile" : "eea-payment-methods-pro.php",
-	"slug" : "eea-payment-methods-pro",
-	"textDomain" : "event_espresso",
-	"name" : "Event Espresso Payment Methods Pro",
-	"archiveBaseUrl" : "http://build.eventespresso.com/",
-	"archiveBasePath" : "~/www/build/",
-	"srcBuildFolderName" : "eea-payment-methods-pro",
-	"releaseFilesRemove" : [
-		"src/tests/**",
-		"src/info.json",
-		"src/circle.yml",
-		"src/readme.txt"
-	],
-	"github" : true,
-	"awsbucket" : "",
-	"awsregion" : ""
+  "versionFile": "eea-payment-methods-pro.php",
+  "slug": "eea-payment-methods-pro",
+  "textDomain": "event_espresso",
+  "name": "Event Espresso Payment Methods Pro",
+  "archiveBaseUrl": "http://build.eventespresso.com/",
+  "archiveBasePath": "~/www/build/",
+  "srcBuildFolderName": "eea-payment-methods-pro",
+  "releaseFilesRemove": [
+    "src/tests/**",
+    "src/info.json",
+    "src/circle.yml",
+    "src/readme.txt"
+  ],
+  "github": true,
+  "awsbucket": "",
+  "awsregion": ""
 }
