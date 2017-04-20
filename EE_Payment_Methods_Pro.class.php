@@ -1,11 +1,11 @@
-<?php if ( ! defined( 'EVENT_ESPRESSO_VERSION' ) ) {
-    exit();
-}
+<?php
+defined('EVENT_ESPRESSO_VERSION') || exit();
+
 // define the plugin directory path and URL
-define( 'EE_PAYMENT_METHODS_PRO_BASENAME', plugin_basename( EE_PAYMENT_METHODS_PRO_PLUGIN_FILE ) );
-define( 'EE_PAYMENT_METHODS_PRO_PATH', plugin_dir_path( __FILE__ ) );
-define( 'EE_PAYMENT_METHODS_PRO_URL', plugin_dir_url( __FILE__ ) );
-define( 'EE_PAYMENT_METHODS_PRO_ADMIN', EE_PAYMENT_METHODS_PRO_PATH . 'admin' . DS . 'payment_methods_pro' . DS );
+define('EE_PAYMENT_METHODS_PRO_BASENAME', plugin_basename(EE_PAYMENT_METHODS_PRO_PLUGIN_FILE));
+define('EE_PAYMENT_METHODS_PRO_PATH', plugin_dir_path(__FILE__));
+define('EE_PAYMENT_METHODS_PRO_URL', plugin_dir_url(__FILE__));
+define('EE_PAYMENT_METHODS_PRO_ADMIN', EE_PAYMENT_METHODS_PRO_PATH . 'admin' . DS . 'payment_methods_pro' . DS);
 
 
 
@@ -36,7 +36,7 @@ Class  EE_Payment_Methods_Pro extends EE_Addon {
                     EE_PAYMENT_METHODS_PRO_PATH . 'EED_Payment_Methods_Pro_Event_Payment_Method.module.php',
                     EE_PAYMENT_METHODS_PRO_PATH . 'EED_Payment_Methods_Pro_More_Payment_Methods.module.php',
                 ),
-//				// if plugin update engine is being used for auto-updates. not needed if PUE is not being used.
+                // if plugin update engine is being used for auto-updates. not needed if PUE is not being used.
                 'pue_options'           => array(
                     'pue_plugin_slug' => 'eea-payment-methods-pro',
                     'plugin_basename' => EE_PAYMENT_METHODS_PRO_BASENAME,
@@ -47,9 +47,22 @@ Class  EE_Payment_Methods_Pro extends EE_Addon {
                 'model_extension_paths' => EE_PAYMENT_METHODS_PRO_PATH . 'core' . DS . 'db_model_extensions',
             )
         );
-        add_action( 'AHEE__EE_System__load_espresso_addons', array( __CLASS__, 'deactivate_if_mer_active' ), 20 );
-        add_filter( 'FHEE_do_other_page_hooks_espresso_events', array( __CLASS__, 'add_admin_hooks_file' ) );
     }
+
+
+
+    /**
+     * a safe space for addons to add additional logic like setting hooks
+     * that will run immediately after addon registration
+     * making this a great place for code that needs to be "omnipresent"
+     */
+    public function after_registration()
+    {
+        add_action('AHEE__EE_System__load_espresso_addons', array(__CLASS__, 'deactivate_if_mer_active'), 20);
+        add_filter('FHEE_do_other_page_hooks_espresso_events', array(__CLASS__, 'add_admin_hooks_file'));
+    }
+
+
 
     /**
      * Add our admin hooks class for modifying the event editing page
