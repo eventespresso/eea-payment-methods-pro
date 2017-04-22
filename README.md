@@ -5,7 +5,7 @@ EE4 Payment Methods Pro Add-on
 [![Travis](https://travis-ci.org/eventespresso/eea-payment-methods-pro.svg?branch=master)](https://travis-ci.org/eventespresso/eea-payment-methods-pro)
 [![License](https://img.shields.io/badge/License-GPLv2-blue.svg?style=flat)](https://www.gnu.org/licenses/gpl-2.0.html)
 [![Event Espresso Addon](https://img.shields.io/badge/Addon%20For-Event%20Espresso-blue.svg)](https://github.com/eventespresso/event-espresso-core)
-[![Minimum EE Core Version:](https://img.shields.io/badge/Minimum%20EE%20core%20ver-4.9.37.p-red.svg)](https://github.com/eventespresso/event-espresso-core/releases/tag/4.9.37.p)
+[![Minimum EE Core Version:](https://img.shields.io/badge/Minimum%20EE%20core%20ver-4.9.32.p-red.svg)](https://github.com/eventespresso/event-espresso-core/releases/tag/4.9.32.p)
 
 The [Event Espresso](https://eventespresso.com) Payment Methods Pro add-on gives you more control of payment methods. You can use it to activate multiple payment methods of the same type, set one as default, but control which is available on specific events.
 
