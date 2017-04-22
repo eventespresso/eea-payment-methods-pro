@@ -15,6 +15,7 @@ if ( ! defined( 'EVENT_ESPRESSO_VERSION' ) ) {
 class EED_Payment_Methods_Pro_Event_Payment_Method_Test extends EE_UnitTestCase {
 
     function test_show_payment_methods_indicated_by_event_postmetas() {
+        $this->markTestSkipped('we no longer associate events and payment methods using postmetas; isnead use the extra join table');
         //remove all payment methods by default, and dont allow blocking
         EEM_Payment_Method::instance()->delete( array(), false );
         $active_payment_method_in_backend = EE_Payment_Method_Manager::instance()
