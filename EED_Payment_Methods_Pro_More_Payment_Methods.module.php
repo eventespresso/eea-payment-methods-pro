@@ -449,16 +449,18 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
         if ( isset( $req_data['payment_method'] ) ) {
             $payment_method = EEM_Payment_Method::instance()->get_one_by_slug( $req_data['payment_method'] );
             if ( $payment_method instanceof EE_Payment_Method ) {
-                EEM_Currency_Payment_Method::instance()->delete(
-                    array(
+                if(EE_Registry::instance()->is_model_name('Currency_Payment_Method')) {
+                    EEM_Currency_Payment_Method::instance()->delete(
                         array(
-                            'PMD_ID' => $payment_method->ID(),
+                            array(
+                                'PMD_ID' => $payment_method->ID(),
+                            ),
                         ),
-                    ),
-                    //don't allow blocking. So this could orphan transactions and payments but oh well,
-                    //EE should be able to handle that
-                    false
-                );
+                        //don't allow blocking. So this could orphan transactions and payments but oh well,
+                        //EE should be able to handle that
+                        false
+                    );
+                }
                 //delete related currencies
                 EEM_Extra_Meta::instance()->delete( array(
                     array(
