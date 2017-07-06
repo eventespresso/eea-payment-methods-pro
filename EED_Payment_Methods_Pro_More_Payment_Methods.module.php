@@ -415,7 +415,6 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
                 $pm->set_active();
                 $pm->save();
                 $pm->set_available_by_default( false );
-                $payment_methods_manager->set_usable_currencies_on_payment_method( $pm );
                 $pm_slug = $pm->slug();
                 $success = true;
             }
@@ -508,7 +507,6 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
             $payment_method->set_active();
             $payment_method->save();
             $payment_method->set_available_by_default( true );
-            EE_Payment_Method_Manager::instance()->set_usable_currencies_on_payment_method( $payment_method );
             $payment_methods_page->redirect_after_action(
                 1,
                 'Payment Method',
