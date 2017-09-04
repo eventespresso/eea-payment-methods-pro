@@ -58,7 +58,7 @@ Class  EE_Payment_Methods_Pro extends EE_Addon {
      */
     public function after_registration()
     {
-        add_action('AHEE__EE_System__load_espresso_addons', array(__CLASS__, 'deactivate_if_mer_active'), 20);
+        self::deactivate_if_mer_active();
         add_filter('FHEE_do_other_page_hooks_espresso_events', array(__CLASS__, 'add_admin_hooks_file'));
     }
 
