@@ -1,5 +1,4 @@
 <?php
-defined('EVENT_ESPRESSO_VERSION') || exit();
 
 // define the plugin directory path and URL
 define('EE_PAYMENT_METHODS_PRO_BASENAME', plugin_basename(EE_PAYMENT_METHODS_PRO_PLUGIN_FILE));
@@ -17,10 +16,12 @@ define('EE_PAYMENT_METHODS_PRO_ADMIN', EE_PAYMENT_METHODS_PRO_PATH . 'admin' . D
  * @author      Mike Nelson
  * @version     1.0.0.rc.004
  */
-Class  EE_Payment_Methods_Pro extends EE_Addon {
+class EE_Payment_Methods_Pro extends EE_Addon
+{
 
 
-    public static function register_addon() {
+    public static function register_addon()
+    {
         // register addon via Plugin API
         EE_Register_Addon::register(
             'Payment_Methods_Pro',
@@ -71,10 +72,11 @@ Class  EE_Payment_Methods_Pro extends EE_Addon {
      *
      * @return array
      */
-    public static function add_admin_hooks_file( $registered_pages ) {
-        //if PMP got deactivated, or somehow the hooks file didn't get autoloaded after all,
-        //don't register our admin hooks file
-        if ( class_exists( 'espresso_events_Payment_Methods_Pro_Hooks' ) ) {
+    public static function add_admin_hooks_file($registered_pages)
+    {
+        // if PMP got deactivated, or somehow the hooks file didn't get autoloaded after all,
+        // don't register our admin hooks file
+        if (class_exists('espresso_events_Payment_Methods_Pro_Hooks')) {
             $registered_pages[] = 'espresso_events_Payment_Methods_Pro_Hooks.class.php';
         }
 
@@ -89,10 +91,11 @@ Class  EE_Payment_Methods_Pro extends EE_Addon {
      * @access    public
      * @return    void
      */
-    public function additional_admin_hooks() {
+    public function additional_admin_hooks()
+    {
         // is admin and not in M-Mode ?
-        if ( is_admin() && ! EE_Maintenance_Mode::instance()->level() ) {
-            add_filter( 'plugin_action_links', array( $this, 'plugin_actions' ), 10, 2 );
+        if (is_admin() && ! EE_Maintenance_Mode::instance()->level()) {
+            add_filter('plugin_action_links', array( $this, 'plugin_actions' ), 10, 2);
         }
     }
 
@@ -106,11 +109,14 @@ Class  EE_Payment_Methods_Pro extends EE_Addon {
      *
      * @return array
      */
-    public function plugin_actions( $links, $file ) {
-        if ( $file === EE_PAYMENT_METHODS_PRO_BASENAME ) {
+    public function plugin_actions($links, $file)
+    {
+        if ($file === EE_PAYMENT_METHODS_PRO_BASENAME) {
             // before other links
-            array_unshift( $links,
-                '<a href="admin.php?page=espresso_payment_methods_pro">' . __( 'Settings' ) . '</a>' );
+            array_unshift(
+                $links,
+                '<a href="admin.php?page=espresso_payment_methods_pro">' . __('Settings', 'event_espresso') . '</a>'
+            );
         }
 
         return $links;
@@ -123,25 +129,21 @@ Class  EE_Payment_Methods_Pro extends EE_Addon {
      * Besides, people who need this probably don't need MER. But we'll see
      * if folks indicate otherwise
      */
-    public static function deactivate_if_mer_active() {
-        if ( class_exists( 'EE_Multi_Event_Registration' )
+    public static function deactivate_if_mer_active()
+    {
+        if (class_exists('EE_Multi_Event_Registration')
              && isset(EE_Registry::instance()->addons->EE_Multi_Event_Registration)
              && EE_Registry::instance()->addons->EE_Multi_Event_Registration instanceof EE_Multi_Event_Registration
         ) {
-            if ( ! function_exists( 'deactivate_plugins' ) ) {
-                require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+            if (! function_exists('deactivate_plugins')) {
+                require_once(ABSPATH . 'wp-admin/includes/plugin.php');
             }
-            deactivate_plugins( EE_PAYMENT_METHODS_PRO_BASENAME );
+            deactivate_plugins(EE_PAYMENT_METHODS_PRO_BASENAME);
             EE_Error::add_persistent_admin_notice(
                 'no_mer_and_pmp_together',
-                __( 'Payment Methods Pro addon was deactivated because Multi Event Registration was also active, and the two are incompatible.' ),
+                __('Payment Methods Pro addon was deactivated because Multi Event Registration was also active, and the two are incompatible.', 'event_espresso'),
                 true
             );
         }
     }
-
-
-
 }
-// End of file EE_Payment_Methods_Pro.class.php
-// Location: wp-content/plugins/eea-payment-methods-pro/EE_Payment_Methods_Pro.class.php

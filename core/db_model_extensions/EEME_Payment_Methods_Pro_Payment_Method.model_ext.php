@@ -1,9 +1,4 @@
 <?php
-if ( ! defined( 'EVENT_ESPRESSO_VERSION' ) ) {
-    exit( 'No direct script access allowed' );
-}
-
-
 
 /**
  * EEME_Payment_Methods_Pro_Payment_Method extends EEM_Event so it's related to payment methods
@@ -20,12 +15,14 @@ if ( ! defined( 'EVENT_ESPRESSO_VERSION' ) ) {
  * @subpackage
  * @author                Mike Nelson
  */
-class EEME_Payment_Methods_Pro_Payment_Method extends EEME_Base {
+class EEME_Payment_Methods_Pro_Payment_Method extends EEME_Base
+{
 
     /**
      * @throws \EE_Error
      */
-    public function __construct() {
+    public function __construct()
+    {
         $this->_model_name_extended = 'Payment_Method';
         $this->_extra_relations = array(
             'Event' => new EE_HABTM_Any_Relation(),
@@ -47,38 +44,39 @@ class EEME_Payment_Methods_Pro_Payment_Method extends EEME_Base {
      * @return EE_Payment_Method[]
      * @throws EE_Error
      */
-    public function ext_get_payment_methods_available_for_event( $event_id, $payment_methods = array() ) {
-        if ( empty( $payment_methods ) ) {
-            $payment_methods = EEM_Payment_Method::instance()->get_all_active( EEM_Payment_Method::scope_cart );
+    public function ext_get_payment_methods_available_for_event($event_id, $payment_methods = array())
+    {
+        if (empty($payment_methods)) {
+            $payment_methods = EEM_Payment_Method::instance()->get_all_active(EEM_Payment_Method::scope_cart);
         }
-        //remove payment methods which shouldn't be available by default
-        foreach ( (array) $payment_methods as $key => $payment_method ) {
-            if ( ! $payment_method->is_available_by_default() ) {
-                unset( $payment_methods[ $key ] );
+        // remove payment methods which shouldn't be available by default
+        foreach ((array) $payment_methods as $key => $payment_method) {
+            if (! $payment_method->is_available_by_default()) {
+                unset($payment_methods[ $key ]);
             }
         }
-        //now let's find all the exceptions to normal payment method availability.
-        //by "exception" I mean a payment method that's normally available on all events, but
-        //isn't for one of these events; or a payment method that's normally NOT available,
-        //but IS for one of these events.
-        $payment_method_availability_exceptions = (array) $this->_->get_payment_method_availability_exceptions( $event_id );
-        //ok so if a payment method is normally available, but it's an exception, then it's now NOT available. Remove it.
-        foreach ( $payment_method_availability_exceptions as $payment_method_id => $on_by_default ) {
-            //assume $payment_methods is indexed by primary keys, which currently it is (the only time
-            //it isn't is when the model has no primary key)
-            if ( $on_by_default ) {
-                //it's normally available, but we're making an exception. So it shouldn't be available
-                unset( $payment_methods[ $payment_method_id ] );
+        // now let's find all the exceptions to normal payment method availability.
+        // by "exception" I mean a payment method that's normally available on all events, but
+        // isn't for one of these events; or a payment method that's normally NOT available,
+        // but IS for one of these events.
+        $payment_method_availability_exceptions = (array) $this->_->get_payment_method_availability_exceptions($event_id);
+        // ok so if a payment method is normally available, but it's an exception, then it's now NOT available. Remove it.
+        foreach ($payment_method_availability_exceptions as $payment_method_id => $on_by_default) {
+            // assume $payment_methods is indexed by primary keys, which currently it is (the only time
+            // it isn't is when the model has no primary key)
+            if ($on_by_default) {
+                // it's normally available, but we're making an exception. So it shouldn't be available
+                unset($payment_methods[ $payment_method_id ]);
             } else {
-                //it's normally NOT available, and we're making an exception. So it SHOULD be available
-                //so add it back in. This isn't actually that terribly inefficient because we
-                //already fetched it from the DB (it was in $payment_methods at the start of this method,
-                //but it got removed) so we're just fetching it from the entity map, not making
-                //another trip to the DB
+                // it's normally NOT available, and we're making an exception. So it SHOULD be available
+                // so add it back in. This isn't actually that terribly inefficient because we
+                // already fetched it from the DB (it was in $payment_methods at the start of this method,
+                // but it got removed) so we're just fetching it from the entity map, not making
+                // another trip to the DB
                 $payment_method_not_normally_available = EEM_Payment_Method::instance()
-                                                                           ->get_one_by_ID( $payment_method_id );
-                //double-check the payment method is actually usable from the frontend
-                if ( in_array( EEM_Payment_Method::scope_cart, $payment_method_not_normally_available->scope() ) ) {
+                                                                           ->get_one_by_ID($payment_method_id);
+                // double-check the payment method is actually usable from the frontend
+                if (in_array(EEM_Payment_Method::scope_cart, $payment_method_not_normally_available->scope())) {
                     $payment_methods[ $payment_method_id ] = $payment_method_not_normally_available;
                 }
             }
@@ -104,8 +102,9 @@ class EEME_Payment_Methods_Pro_Payment_Method extends EEME_Base {
      * by default on all events
      * @throws EE_Error
      */
-    public function ext_get_payment_method_default_availabilities( $query_params ) {
-        $payment_method_ids = (array) $this->_->get_col( $query_params );
+    public function ext_get_payment_method_default_availabilities($query_params)
+    {
+        $payment_method_ids = (array) $this->_->get_col($query_params);
         $availabilities     = EEM_Extra_Meta::instance()->get_all(
             array(
                 array(
@@ -114,14 +113,14 @@ class EEME_Payment_Methods_Pro_Payment_Method extends EEME_Base {
             )
         );
         $mapping            = array();
-        foreach ( $payment_method_ids as $payment_method_id ) {
-            //if there is no extra meta row for "on_by_default", it was probably activated before PMP,
-            //and in that case it WAS available by default on all events, so maintain that behaviour.
-            //Logic effectively duplicated in EEE_Payment_Methods_Pro_Payment_Method::ext_is_available_by_default()
+        foreach ($payment_method_ids as $payment_method_id) {
+            // if there is no extra meta row for "on_by_default", it was probably activated before PMP,
+            // and in that case it WAS available by default on all events, so maintain that behaviour.
+            // Logic effectively duplicated in EEE_Payment_Methods_Pro_Payment_Method::ext_is_available_by_default()
             $available = true;
-            foreach ( $availabilities as $extra_meta_obj ) {
-                if ( $extra_meta_obj->get( 'OBJ_ID' ) === intval( $payment_method_id ) ) {
-                    $available = $extra_meta_obj->get( 'EXM_value' ) === '1' ? true : false;
+            foreach ($availabilities as $extra_meta_obj) {
+                if ($extra_meta_obj->get('OBJ_ID') === intval($payment_method_id)) {
+                    $available = $extra_meta_obj->get('EXM_value') === '1' ? true : false;
                     break;
                 }
             }
@@ -141,10 +140,11 @@ class EEME_Payment_Methods_Pro_Payment_Method extends EEME_Base {
      * @return array keys are payment method IDs, keys are whether or not they should be on by default
      * @throws EE_Error
      */
-    public function ext_get_payment_method_availability_exceptions( $event_id ) {
-        //So let's look for rows in the extra_join table, indicating they're an exception
-        //(by "exception" I mean a payment method that's normally available but isn't for this event, or
-        //a payment method which normally is NOT available, but is for this event).
+    public function ext_get_payment_method_availability_exceptions($event_id)
+    {
+        // So let's look for rows in the extra_join table, indicating they're an exception
+        // (by "exception" I mean a payment method that's normally available but isn't for this event, or
+        // a payment method which normally is NOT available, but is for this event).
         $pm_exceptions = (array) $this->_->get_col(
             array(
                 array(
@@ -152,8 +152,8 @@ class EEME_Payment_Methods_Pro_Payment_Method extends EEME_Base {
                 ),
             )
         );
-        //now that we know all the payment methods that are exceptions for this event, find whether they're
-        //normally available or not.
+        // now that we know all the payment methods that are exceptions for this event, find whether they're
+        // normally available or not.
         return $this->ext_get_payment_method_default_availabilities(
             array(
                 array(
@@ -163,5 +163,3 @@ class EEME_Payment_Methods_Pro_Payment_Method extends EEME_Base {
         );
     }
 }
-
-// End of file EEME_Payment_Methods_Pro_Payment_Method.model_ext.php

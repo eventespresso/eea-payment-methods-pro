@@ -1,9 +1,4 @@
-<?php if ( ! defined( 'EVENT_ESPRESSO_VERSION' ) ) {
-    exit( 'No direct script access allowed' );
-}
-
-
-
+<?php
 /**
  * Class  EED_Payment_Methods_Pro_More_Payment_Methods
  * Modifies the payment methods admin page to allow an admin to
@@ -13,7 +8,8 @@
  * @subpackage         eea-payment-methods-pro
  * @author             Mike Nelson
  */
-class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
+class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module
+{
 
     /**
      * name of the extra meta key where we store whether or not a payment
@@ -24,8 +20,9 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
     /**
      * @return EED_Payment_Methods_Pro_more_Payment_Methods
      */
-    public static function instance() {
-        return parent::get_instance( __CLASS__ );
+    public static function instance()
+    {
+        return parent::get_instance(__CLASS__);
     }
 
 
@@ -36,7 +33,8 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
      * @access    public
      * @return    void
      */
-    public static function set_hooks() {
+    public static function set_hooks()
+    {
     }
 
     /**
@@ -45,7 +43,8 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
      * @access    public
      * @return    void
      */
-    public static function set_hooks_admin() {
+    public static function set_hooks_admin()
+    {
         add_filter(
             'FHEE__Payments_Admin_Page__page_setup__page_routes',
             array( 'EED_Payment_Methods_Pro_More_Payment_Methods', 'add_admin_routes' )
@@ -70,7 +69,7 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
             'admin_enqueue_scripts',
             array( 'EED_Payment_Methods_Pro_More_Payment_Methods', 'enqueue_scripts' )
         );
-        //add EED_Payment_Methods_Pro_More_Payment_Methods::on_by_default_meta_key to all payment method forms
+        // add EED_Payment_Methods_Pro_More_Payment_Methods::on_by_default_meta_key to all payment method forms
         add_action(
             'AHEE__EE_Form_Input_Base___construct__before_construct_finalize_called',
             array( 'EED_Payment_Methods_Pro_More_Payment_Methods', 'add_primary_input_to_payment_method_forms' ),
@@ -84,7 +83,7 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
             10,
             2
         );
-        //save it when saving the payment method too
+        // save it when saving the payment method too
         add_action(
             'AHEE__EE_Model_Form_Section__save__done',
             array( 'EED_Payment_Methods_Pro_More_Payment_Methods', 'save_payment_method_form' ),
@@ -104,16 +103,17 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
      *
      * @return array
      */
-    public static function add_buttons_onto_payment_settings_forms( $subsections, $payment_method ) {
+    public static function add_buttons_onto_payment_settings_forms($subsections, $payment_method)
+    {
         $activate_another_text = sprintf(
-            __( 'Activate Another %1$s Payment Method', 'event_espresso' ),
+            __('Activate Another %1$s Payment Method', 'event_espresso'),
             $payment_method->type_obj()->pretty_name()
         );
         $delete_text           = sprintf(
-            __( 'Permanently Delete %1$s Payment Method', 'event_espresso' ),
+            __('Permanently Delete %1$s Payment Method', 'event_espresso'),
             $payment_method->admin_name()
         );
-        $url                   = defined( 'EE_PAYMENTS_ADMIN_URL' ) ? EE_PAYMENTS_ADMIN_URL : '';
+        $url                   = defined('EE_PAYMENTS_ADMIN_URL') ? EE_PAYMENTS_ADMIN_URL : '';
         $subsections           = EEH_Array::insert_into_array(
             $subsections,
             array(
@@ -138,7 +138,7 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
                     )
                 ),
             )
-        // insert at very beginning
+            // insert at very beginning
         );
         $subsections = EEH_Array::insert_into_array(
             $subsections,
@@ -182,16 +182,18 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
      * @return EE_Payment_Method[]
      * @throws EE_Error
      */
-    public static function add_other_payment_methods( $payment_methods ) {
+    public static function add_other_payment_methods($payment_methods)
+    {
         $other_payment_methods = EEM_Payment_Method::instance()->get_all(
             array(
                 array(
                     'PMD_type' => array( '!=', 'Admin_Only' ),
-                    'PMD_slug' => array( 'NOT_IN', array_keys( $payment_methods ) ),
+                    'PMD_slug' => array( 'NOT_IN', array_keys($payment_methods) ),
                 ),
-            ) );
+            )
+        );
 
-        return array_merge( $payment_methods, $other_payment_methods );
+        return array_merge($payment_methods, $other_payment_methods);
     }
 
 
@@ -202,7 +204,8 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
      *
      * @return array
      */
-    public static function add_admin_routes( $routes ) {
+    public static function add_admin_routes($routes)
+    {
         $routes['activate_another_payment_method'] = array(
             'func'       => array(
                 'EED_Payment_Methods_Pro_More_Payment_Methods',
@@ -241,14 +244,18 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
      *
      * @return EE_Form_Section_Base[]
      */
-    public static function change_activate_pm_button( $subsections, $payment_method ) {
-        $link_text_and_title = sprintf( __( 'Activate %1$s Payment Method?', 'event_espresso' ),
-            $payment_method->admin_name() );
+    public static function change_activate_pm_button($subsections, $payment_method)
+    {
+        $link_text_and_title = sprintf(
+            __('Activate %1$s Payment Method?', 'event_espresso'),
+            $payment_method->admin_name()
+        );
 
         return array(
             new EE_Form_Section_HTML(
                 EEH_HTML::tr(
-                    EEH_HTML::td( $payment_method->type_obj()->introductory_html(),
+                    EEH_HTML::td(
+                        $payment_method->type_obj()->introductory_html(),
                         '',
                         '',
                         '',
@@ -257,7 +264,7 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
                 ) .
                 EEH_HTML::tr(
                     EEH_HTML::th(
-                        EEH_HTML::label( __( 'Click to Activate ', 'event_espresso' ) )
+                        EEH_HTML::label(__('Click to Activate ', 'event_espresso'))
                     ) .
                     EEH_HTML::td(
                         EEH_HTML::link(
@@ -286,16 +293,21 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
      *
      * @param string $hook see
      */
-    public static function enqueue_scripts( $hook ) {
-        if ( $hook === 'event-espresso_page_espresso_payment_settings' ) {
-            wp_enqueue_script( 'pmp_more_payment_methods',
-                EE_PAYMENT_METHODS_PRO_URL . '/scripts/' . 'espresso_payment_methods_pro.js' );
+    public static function enqueue_scripts($hook)
+    {
+        if ($hook === 'event-espresso_page_espresso_payment_settings') {
+            wp_enqueue_script(
+                'pmp_more_payment_methods',
+                EE_PAYMENT_METHODS_PRO_URL . '/scripts/' . 'espresso_payment_methods_pro.js'
+            );
             wp_localize_script(
                 'pmp_more_payment_methods',
                 'ee_pmp_i18n',
                 array(
-                    'delete_pm_confirm' => __( 'Are you sure you want to permanently delete this payment method? It cannot be undone.',
-                        'event_espresso' ),
+                    'delete_pm_confirm' => __(
+                        'Are you sure you want to permanently delete this payment method? It cannot be undone.',
+                        'event_espresso'
+                    ),
                 )
             );
         }
@@ -311,7 +323,8 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
      *
      * @return    void
      */
-    public function run( $WP ) {
+    public function run($WP)
+    {
     }
 
 
@@ -323,18 +336,22 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
      *
      * @throws EE_Error
      */
-    public static function add_primary_input_to_payment_method_forms( $form ) {
-        if ( $form instanceof EE_Payment_Method_Form
-             && ! $form->subsection_exists( EED_Payment_Methods_Pro_More_Payment_Methods::on_by_default_meta_key )
+    public static function add_primary_input_to_payment_method_forms($form)
+    {
+        if ($form instanceof EE_Payment_Method_Form
+             && ! $form->subsection_exists(EED_Payment_Methods_Pro_More_Payment_Methods::on_by_default_meta_key)
         ) {
             $form->add_subsections(
                 array(
                     EED_Payment_Methods_Pro_More_Payment_Methods::on_by_default_meta_key => new EE_Yes_No_Input(
                         array(
-                            'html_label_text' => __( 'Available By Default', 'event_espresso' ),
-                            'html_help_text'  => __( 'Set to "No" in order to only make this payment method available for specific events (go to the event\'s admin editing page, and select the payment method in the "Payment Methods" metabox.) When set to "Yes" the payment method is available on all events by default, like normal.',
-                                'event_espresso' ),
-                        ) ),
+                            'html_label_text' => __('Available By Default', 'event_espresso'),
+                            'html_help_text'  => __(
+                                'Set to "No" in order to only make this payment method available for specific events (go to the event\'s admin editing page, and select the payment method in the "Payment Methods" metabox.) When set to "Yes" the payment method is available on all events by default, like normal.',
+                                'event_espresso'
+                            ),
+                        )
+                    ),
                 ),
                 'PMD_scope',
                 false
@@ -351,8 +368,9 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
      *
      * @return array
      */
-    public static function populate_primary_input_too( $defaults, $form ) {
-        if ( $form instanceof EE_Payment_Method_Form ) {
+    public static function populate_primary_input_too($defaults, $form)
+    {
+        if ($form instanceof EE_Payment_Method_Form) {
             $defaults[ EED_Payment_Methods_Pro_More_Payment_Methods::on_by_default_meta_key ] = (bool) $form->get_model_object()
                                                                                                             ->is_available_by_default();
         }
@@ -371,11 +389,12 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
      *
      * @throws EE_Error
      */
-    public static function save_payment_method_form( $payment_method_form, $save_result ) {
-        //if we just successfully used a payment method form to save a payment method
-        if ( $payment_method_form instanceof EE_Payment_Method_Form ) {
+    public static function save_payment_method_form($payment_method_form, $save_result)
+    {
+        // if we just successfully used a payment method form to save a payment method
+        if ($payment_method_form instanceof EE_Payment_Method_Form) {
             $payment_method_form->get_model_object()
-                                ->set_available_by_default( $payment_method_form->get_input_value( EED_Payment_Methods_Pro_More_Payment_Methods::on_by_default_meta_key ) );
+                                ->set_available_by_default($payment_method_form->get_input_value(EED_Payment_Methods_Pro_More_Payment_Methods::on_by_default_meta_key));
         }
     }
 
@@ -395,26 +414,26 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
         $req_data = $payment_methods_page->get_request_data();
         $pm_slug  = null;
         $success  = false;
-        if ( isset( $req_data['payment_method_type'] ) ) {
-            EE_Registry::instance()->load_lib( 'Payment_Method_Manager' );
+        if (isset($req_data['payment_method_type'])) {
+            EE_Registry::instance()->load_lib('Payment_Method_Manager');
             $payment_methods_manager = EE_Payment_Method_Manager::instance();
-            $pm_type_class           = $payment_methods_manager->payment_method_class_from_type( $req_data['payment_method_type'] );
-            if ( class_exists( $pm_type_class ) ) {
+            $pm_type_class           = $payment_methods_manager->payment_method_class_from_type($req_data['payment_method_type']);
+            if (class_exists($pm_type_class)) {
                 /** @var $pm_type_obj EE_PMT_Base */
                 $pm_type_obj = new $pm_type_class;
                 /** @var EE_Payment_Method $pm */
-                $pm              = $payment_methods_manager->create_payment_method_of_type( $pm_type_obj );
+                $pm              = $payment_methods_manager->create_payment_method_of_type($pm_type_obj);
                 $admin_name_base = $pm->admin_name();
                 $slug_base       = $pm->slug();
                 $count           = 2;
-                while ( EEM_Payment_Method::instance()->exists( array( array( 'PMD_slug' => $pm->slug() ) ) ) ) {
-                    $pm->set_slug( $slug_base . '-' . $count );
-                    $pm->set_admin_name( $admin_name_base . ' ' . $count ++ );
+                while (EEM_Payment_Method::instance()->exists(array( array( 'PMD_slug' => $pm->slug() ) ))) {
+                    $pm->set_slug($slug_base . '-' . $count);
+                    $pm->set_admin_name($admin_name_base . ' ' . $count ++);
                 }
-                $payment_methods_manager->initialize_payment_method( $pm );
+                $payment_methods_manager->initialize_payment_method($pm);
                 $pm->set_active();
                 $pm->save();
-                $pm->set_available_by_default( false );
+                $pm->set_available_by_default(false);
                 $pm_slug = $pm->slug();
                 $success = true;
             }
@@ -442,31 +461,32 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
      *
      * @throws \EE_Error
      */
-    public static function ee_payment_methods_pro_delete_payment_method( Payments_Admin_Page $payment_methods_page ) {
+    public static function ee_payment_methods_pro_delete_payment_method(Payments_Admin_Page $payment_methods_page)
+    {
         $req_data = $payment_methods_page->get_request_data();
         $success  = false;
-        if ( isset( $req_data['payment_method'] ) ) {
-            $payment_method = EEM_Payment_Method::instance()->get_one_by_slug( $req_data['payment_method'] );
-            if ( $payment_method instanceof EE_Payment_Method ) {
-                if(EE_Registry::instance()->is_model_name('Currency_Payment_Method')) {
+        if (isset($req_data['payment_method'])) {
+            $payment_method = EEM_Payment_Method::instance()->get_one_by_slug($req_data['payment_method']);
+            if ($payment_method instanceof EE_Payment_Method) {
+                if (EE_Registry::instance()->is_model_name('Currency_Payment_Method')) {
                     EEM_Currency_Payment_Method::instance()->delete(
                         array(
                             array(
                                 'PMD_ID' => $payment_method->ID(),
                             ),
                         ),
-                        //don't allow blocking. So this could orphan transactions and payments but oh well,
-                        //EE should be able to handle that
+                        // don't allow blocking. So this could orphan transactions and payments but oh well,
+                        // EE should be able to handle that
                         false
                     );
                 }
-                //delete related currencies
-                EEM_Extra_Meta::instance()->delete( array(
+                // delete related currencies
+                EEM_Extra_Meta::instance()->delete(array(
                     array(
                         'EXM_type' => 'Payment_Method',
                         'OBJ_ID'   => $payment_method->ID(),
                     ),
-                ) );
+                ));
                 $payment_method->delete();
                 $success = true;
             }
@@ -489,11 +509,12 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
      *
      * @throws EE_Error
      */
-    public static function ee_payment_methods_pro_activate_payment_method( Payments_Admin_Page $payment_methods_page ) {
+    public static function ee_payment_methods_pro_activate_payment_method(Payments_Admin_Page $payment_methods_page)
+    {
         $req_data = $payment_methods_page->get_request_data();
-        $slug     = isset( $req_data['payment_method_slug'] ) ? $req_data['payment_method_slug'] : '';
-        $type     = isset( $req_data['payment_method_type'] ) ? $req_data['payment_method_type'] : '';
-        //if there's already a payment method of the correct type and slug, just reactivate it
+        $slug     = isset($req_data['payment_method_slug']) ? $req_data['payment_method_slug'] : '';
+        $type     = isset($req_data['payment_method_type']) ? $req_data['payment_method_type'] : '';
+        // if there's already a payment method of the correct type and slug, just reactivate it
         $payment_method = EEM_Payment_Method::instance()->get_one(
             array(
                 array(
@@ -502,11 +523,11 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
                 ),
             )
         );
-        if ( $payment_method instanceof EE_Payment_Method ) {
-            EE_Registry::instance()->load_lib( 'Payment_Method_Manager' );
+        if ($payment_method instanceof EE_Payment_Method) {
+            EE_Registry::instance()->load_lib('Payment_Method_Manager');
             $payment_method->set_active();
             $payment_method->save();
-            $payment_method->set_available_by_default( true );
+            $payment_method->set_available_by_default(true);
             $payment_methods_page->redirect_after_action(
                 1,
                 'Payment Method',
@@ -517,14 +538,14 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
                 )
             );
         }
-        //if the slug didn't find a payment method, fallback to the old way of looking
-        //if the payment method slug
-        $payment_method_type = sanitize_text_field( $req_data['payment_method_type'] );
-        //see if one exists
-        EE_Registry::instance()->load_lib( 'Payment_Method_Manager' );
+        // if the slug didn't find a payment method, fallback to the old way of looking
+        // if the payment method slug
+        $payment_method_type = sanitize_text_field($req_data['payment_method_type']);
+        // see if one exists
+        EE_Registry::instance()->load_lib('Payment_Method_Manager');
         $payment_method = EE_Payment_Method_Manager::instance()
-                                                   ->activate_a_payment_method_of_type( $payment_method_type );
-        if ( $payment_method instanceof EE_Payment_Method ) {
+                                                   ->activate_a_payment_method_of_type($payment_method_type);
+        if ($payment_method instanceof EE_Payment_Method) {
             $payment_methods_page->redirect_after_action(
                 1,
                 'Payment Method',
@@ -543,7 +564,4 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module {
             );
         }
     }
-
-
-
 }
