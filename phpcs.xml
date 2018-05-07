@@ -14,4 +14,9 @@
     <rule ref="PSR1.Files.SideEffects.FoundWithSymbols">
         <exclude-pattern>eea-payment-methods-pro.php</exclude-pattern>
     </rule>
+
+    <rule ref="WordPress.WP.I18n.SingleUnderscoreGetTextFunction">
+        <exclude-pattern>*\.class_ext.php</exclude-pattern>
+        <exclude-pattern>*\.model_ext.php</exclude-pattern>
+    </rule>
 </ruleset>
