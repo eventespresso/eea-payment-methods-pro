@@ -258,8 +258,8 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module
         return array(
             new EE_Form_Section_HTML(
                 EEH_HTML::no_row(
-                        $payment_method->type_obj()->introductory_html(),
-                        2
+                    $payment_method->type_obj()->introductory_html(),
+                    2
                 ) .
                 EEH_HTML::table(
                     EEH_HTML::tr(
