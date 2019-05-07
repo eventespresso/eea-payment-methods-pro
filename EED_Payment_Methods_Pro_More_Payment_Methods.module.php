@@ -118,21 +118,23 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module
             $subsections,
             array(
                 'activate_another' => new EE_Form_Section_HTML(
-                    EEH_HTML::tr(
-                        EEH_HTML::th() .
-                        EEH_HTML::td(
-                            EEH_HTML::link(
-                                EE_Admin_Page::add_query_args_and_nonce(
-                                    array(
-                                        'action'              => 'activate_another_payment_method',
-                                        'payment_method_type' => $payment_method->type(),
+                    EEH_HTML::table(
+                        EEH_HTML::tr(
+                            EEH_HTML::th() .
+                            EEH_HTML::td(
+                                EEH_HTML::link(
+                                    EE_Admin_Page::add_query_args_and_nonce(
+                                        array(
+                                            'action'              => 'activate_another_payment_method',
+                                            'payment_method_type' => $payment_method->type(),
+                                        ),
+                                        $url
                                     ),
-                                    $url
-                                ),
-                                $activate_another_text,
-                                $activate_another_text,
-                                'activate_another_' . $payment_method->slug(),
-                                'espresso-button button-secondary'
+                                    $activate_another_text,
+                                    $activate_another_text,
+                                    'activate_another_' . $payment_method->slug(),
+                                    'espresso-button button-secondary'
+                                )
                             )
                         )
                     )
@@ -144,21 +146,23 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module
             $subsections,
             array(
                 'permanently_delete' => new EE_Form_Section_HTML(
-                    EEH_HTML::tr(
-                        EEH_HTML::th() .
-                        EEH_HTML::td(
-                            EEH_HTML::link(
-                                EE_Admin_Page::add_query_args_and_nonce(
-                                    array(
-                                        'action'         => 'delete_payment_method',
-                                        'payment_method' => $payment_method->slug(),
+                    EEH_HTML::table(
+                        EEH_HTML::tr(
+                            EEH_HTML::th() .
+                            EEH_HTML::td(
+                                EEH_HTML::link(
+                                    EE_Admin_Page::add_query_args_and_nonce(
+                                        array(
+                                            'action'         => 'delete_payment_method',
+                                            'payment_method' => $payment_method->slug(),
+                                        ),
+                                        $url
                                     ),
-                                    $url
-                                ),
-                                $delete_text,
-                                $delete_text,
-                                'delete_' . $payment_method->slug(),
-                                'espresso-button button-secondary delete delete-payment-method'
+                                    $delete_text,
+                                    $delete_text,
+                                    'delete_' . $payment_method->slug(),
+                                    'espresso-button button-secondary delete delete-payment-method'
+                                )
                             )
                         )
                     )
@@ -253,33 +257,30 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module
 
         return array(
             new EE_Form_Section_HTML(
-                EEH_HTML::tr(
-                    EEH_HTML::td(
+                EEH_HTML::no_row(
                         $payment_method->type_obj()->introductory_html(),
-                        '',
-                        '',
-                        '',
-                        'colspan="2"'
-                    )
+                        2
                 ) .
-                EEH_HTML::tr(
-                    EEH_HTML::th(
-                        EEH_HTML::label(__('Click to Activate ', 'event_espresso'))
-                    ) .
-                    EEH_HTML::td(
-                        EEH_HTML::link(
-                            EE_Admin_Page::add_query_args_and_nonce(
-                                array(
-                                    'action'              => 'activate_payment_method',
-                                    'payment_method_type' => $payment_method->type(),
-                                    'payment_method_slug' => $payment_method->slug(),
+                EEH_HTML::table(
+                    EEH_HTML::tr(
+                        EEH_HTML::th(
+                            EEH_HTML::label(__('Click to Activate ', 'event_espresso'))
+                        ) .
+                        EEH_HTML::td(
+                            EEH_HTML::link(
+                                EE_Admin_Page::add_query_args_and_nonce(
+                                    array(
+                                        'action'              => 'activate_payment_method',
+                                        'payment_method_type' => $payment_method->type(),
+                                        'payment_method_slug' => $payment_method->slug(),
+                                    ),
+                                    EE_PAYMENTS_ADMIN_URL
                                 ),
-                                EE_PAYMENTS_ADMIN_URL
-                            ),
-                            $link_text_and_title,
-                            $link_text_and_title,
-                            'activate_' . $payment_method->slug(),
-                            'espresso-button-green button-primary'
+                                $link_text_and_title,
+                                $link_text_and_title,
+                                'activate_' . $payment_method->slug(),
+                                'espresso-button-green button-primary'
+                            )
                         )
                     )
                 )
