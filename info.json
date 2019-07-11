@@ -3,7 +3,6 @@
 	"slug": "eea-payment-methods-pro",
 	"textDomain": "event_espresso",
 	"name": "Event Espresso Payment Methods Pro",
-	"jsBuildDirectory": ".\/",
 	"wpi18nJsPotFilePath": ".\/languages\/ee-js.pot",
 	"archiveBaseUrl": "http:\/\/build.eventespresso.com\/",
 	"archiveBasePath": "~\/www\/build\/",
