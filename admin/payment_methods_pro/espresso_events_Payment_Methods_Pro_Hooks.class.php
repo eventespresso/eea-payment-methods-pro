@@ -112,6 +112,8 @@ class espresso_events_Payment_Methods_Pro_Hooks extends EE_Admin_Hooks
                     'default'                => ! empty($available_for_this_type) ? key($available_for_this_type)
                         : 0,
                     'normalization_strategy' => new EE_Int_Normalization(),
+                    'label_size'             => 11,
+                    'enforce_label_size'     => true,
                 )
             );
         }
