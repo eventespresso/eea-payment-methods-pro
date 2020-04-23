@@ -18,7 +18,7 @@ class espresso_events_Payment_Methods_Pro_Hooks extends EE_Admin_Hooks
             0 => array(
                 'page_route' => array( 'edit', 'create_new' ),
                 'func'       => 'event_specific_payment_methods',
-                'label'      => __('Payment Methods', 'event_espresso'),
+                'label'      => esc_html__('Payment Methods', 'event_espresso'),
                 'priority'   => 'default',
                 'context'    => 'side',
             ),
@@ -96,7 +96,7 @@ class espresso_events_Payment_Methods_Pro_Hooks extends EE_Admin_Hooks
         $subsections = array();
         foreach ($payment_methods_grouped_by_type as $type => $payment_methods_of_type) {
             $options = array(
-                0 => __('do not use', 'event_espresso'),
+                0 => esc_html__('do not use', 'event_espresso'),
             );
             foreach ($payment_methods_of_type as $PMD_ID => $name) {
                 $options[ $PMD_ID ] = $name;
@@ -112,6 +112,8 @@ class espresso_events_Payment_Methods_Pro_Hooks extends EE_Admin_Hooks
                     'default'                => ! empty($available_for_this_type) ? key($available_for_this_type)
                         : 0,
                     'normalization_strategy' => new EE_Int_Normalization(),
+                    'label_size'             => 11,
+                    'enforce_label_size'     => true,
                 )
             );
         }
