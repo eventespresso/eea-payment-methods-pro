@@ -11,7 +11,6 @@
  */
 class EEME_Payment_Methods_Pro_Event extends EEME_Base
 {
-
     /**
      * @throws \EE_Error
      */

@@ -9,7 +9,6 @@
  */
 class EEE_Payment_Methods_Pro_Payment_Method extends EEE_Base_Class
 {
-
     /**
      * EEE_Payment_Methods_Pro_Payment_Method constructor.
      *
@@ -41,7 +40,8 @@ class EEE_Payment_Methods_Pro_Payment_Method extends EEE_Base_Class
         // inactive ones of course)
         // get the previous value
         $previous_default_availability = $this->_->is_available_by_default();
-        if (! $previous_default_availability
+        if (
+            ! $previous_default_availability
              && $on_by_default
         ) {
             // ok get the previous available-by-default payment method of this type (there should only be one at a time)
@@ -63,11 +63,12 @@ class EEE_Payment_Methods_Pro_Payment_Method extends EEE_Base_Class
                 // we'd like to just call $previous_default_payment_method->set_available_by_default( false );
                 // but model extensions don't allow for recursion currently. So do the gist of it:
                 // update its extra meta
-                if ($other_pm->get_extra_meta(
-                    EED_Payment_Methods_Pro_More_Payment_Methods::on_by_default_meta_key,
-                    true,
-                    true
-                )
+                if (
+                    $other_pm->get_extra_meta(
+                        EED_Payment_Methods_Pro_More_Payment_Methods::on_by_default_meta_key,
+                        true,
+                        true
+                    )
                 ) {
                     $other_pm->update_extra_meta(
                         EED_Payment_Methods_Pro_More_Payment_Methods::on_by_default_meta_key,
@@ -103,7 +104,8 @@ class EEE_Payment_Methods_Pro_Payment_Method extends EEE_Base_Class
                                AND t.EXJ_second_model_name = d.EXJ_second_model_name;");
                 }
             }
-        } elseif ($previous_default_availability
+        } elseif (
+            $previous_default_availability
                    && ! $on_by_default
         ) {
             // this payment method WAS available by default, but now it won't be.

@@ -17,7 +17,6 @@
  */
 class EEME_Payment_Methods_Pro_Payment_Method extends EEME_Base
 {
-
     /**
      * @throws \EE_Error
      */
