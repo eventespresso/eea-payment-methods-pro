@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class  EED_Payment_Methods_Pro
  * This class adds hooks for filtering which payment methods are available
@@ -11,7 +12,6 @@
  */
 class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module
 {
-
     /**
      * postmeta meta_key that indicates extra payment methods to include for certain events.
      * Now deprecated because we have a metabox for setting the payment methods on the event,
@@ -211,8 +211,10 @@ class EED_Payment_Methods_Pro_Event_Payment_Method extends EED_Module
                 $event_id = $primary_reg->event_ID();
                 $payment_methods_for_event = EEM_Payment_Method::instance()->get_payment_methods_available_for_event($event_id);
                 foreach ($payment_methods_for_event as $payment_method_on_event) {
-                    if ($payment_method_on_event instanceof EE_Payment_Method
-                        && $payment_method_on_event->type() === 'Invoice' ) {
+                    if (
+                        $payment_method_on_event instanceof EE_Payment_Method
+                        && $payment_method_on_event->type() === 'Invoice'
+                    ) {
                             return $payment_method_on_event;
                     }
                 }

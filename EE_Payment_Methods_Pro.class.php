@@ -18,8 +18,6 @@ define('EE_PAYMENT_METHODS_PRO_ADMIN', EE_PAYMENT_METHODS_PRO_PATH . 'admin' . D
  */
 class EE_Payment_Methods_Pro extends EE_Addon
 {
-
-
     public static function register_addon()
     {
         // register addon via Plugin API
@@ -115,7 +113,7 @@ class EE_Payment_Methods_Pro extends EE_Addon
             // before other links
             array_unshift(
                 $links,
-                '<a href="admin.php?page=espresso_payment_methods_pro">' . __('Settings', 'event_espresso') . '</a>'
+                '<a href="admin.php?page=espresso_payment_methods_pro">' . esc_html__('Settings', 'event_espresso') . '</a>'
             );
         }
 
@@ -131,7 +129,8 @@ class EE_Payment_Methods_Pro extends EE_Addon
      */
     public static function deactivate_if_mer_active()
     {
-        if (class_exists('EE_Multi_Event_Registration')
+        if (
+            class_exists('EE_Multi_Event_Registration')
              && isset(EE_Registry::instance()->addons->EE_Multi_Event_Registration)
              && EE_Registry::instance()->addons->EE_Multi_Event_Registration instanceof EE_Multi_Event_Registration
         ) {

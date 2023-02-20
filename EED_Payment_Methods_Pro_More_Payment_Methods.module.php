@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class  EED_Payment_Methods_Pro_More_Payment_Methods
  * Modifies the payment methods admin page to allow an admin to
@@ -10,15 +11,17 @@
  */
 class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module
 {
-
     /**
      * name of the extra meta key where we store whether or not a payment
      * method should appear by default on all events
      */
     const on_by_default_meta_key = 'on_by_default';
 
+
     /**
      * @return EED_Payment_Methods_Pro_more_Payment_Methods
+     * @throws EE_Error
+     * @throws ReflectionException
      */
     public static function instance()
     {
@@ -93,7 +96,6 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module
     }
 
 
-
     /**
      * Adds buttons onto the end of each payment method settings form to allow
      * activating a new payment method of the same type, and permanently delete them too
@@ -102,6 +104,7 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module
      * @param EE_Payment_Method $payment_method
      *
      * @return array
+     * @throws EE_Error
      */
     public static function add_buttons_onto_payment_settings_forms($subsections, $payment_method)
     {
@@ -118,23 +121,21 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module
             $subsections,
             array(
                 'activate_another' => new EE_Form_Section_HTML(
-                    EEH_HTML::table(
-                        EEH_HTML::tr(
-                            EEH_HTML::th() .
-                            EEH_HTML::td(
-                                EEH_HTML::link(
-                                    EE_Admin_Page::add_query_args_and_nonce(
-                                        array(
-                                            'action'              => 'activate_another_payment_method',
-                                            'payment_method_type' => $payment_method->type(),
-                                        ),
-                                        $url
+                    EEH_HTML::tr(
+                        EEH_HTML::th() .
+                        EEH_HTML::td(
+                            EEH_HTML::link(
+                                EE_Admin_Page::add_query_args_and_nonce(
+                                    array(
+                                        'action'              => 'activate_another_payment_method',
+                                        'payment_method_type' => $payment_method->type(),
                                     ),
-                                    $activate_another_text,
-                                    $activate_another_text,
-                                    'activate_another_' . $payment_method->slug(),
-                                    'espresso-button button-secondary'
-                                )
+                                    $url
+                                ),
+                                $activate_another_text,
+                                $activate_another_text,
+                                'activate_another_' . $payment_method->slug(),
+                                'button button--secondary'
                             )
                         )
                     )
@@ -146,23 +147,21 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module
             $subsections,
             array(
                 'permanently_delete' => new EE_Form_Section_HTML(
-                    EEH_HTML::table(
-                        EEH_HTML::tr(
-                            EEH_HTML::th() .
-                            EEH_HTML::td(
-                                EEH_HTML::link(
-                                    EE_Admin_Page::add_query_args_and_nonce(
-                                        array(
-                                            'action'         => 'delete_payment_method',
-                                            'payment_method' => $payment_method->slug(),
-                                        ),
-                                        $url
+                    EEH_HTML::tr(
+                        EEH_HTML::th() .
+                        EEH_HTML::td(
+                            EEH_HTML::link(
+                                EE_Admin_Page::add_query_args_and_nonce(
+                                    array(
+                                        'action'         => 'delete_payment_method',
+                                        'payment_method' => $payment_method->slug(),
                                     ),
-                                    $delete_text,
-                                    $delete_text,
-                                    'delete_' . $payment_method->slug(),
-                                    'espresso-button button-secondary delete delete-payment-method'
-                                )
+                                    $url
+                                ),
+                                $delete_text,
+                                $delete_text,
+                                'delete_' . $payment_method->slug(),
+                                'button button--secondary delete delete-payment-method'
                             )
                         )
                     )
@@ -176,7 +175,6 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module
     }
 
 
-
     /**
      * Adds other payment methods of the same type, which weren't picked up
      * by EE core
@@ -185,6 +183,7 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module
      *
      * @return EE_Payment_Method[]
      * @throws EE_Error
+     * @throws ReflectionException
      */
     public static function add_other_payment_methods($payment_methods)
     {
@@ -238,6 +237,7 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module
         return $routes;
     }
 
+
     /**
      * Changes the payment method settings form so the button to activate a payment
      * method sends in the payment method slug too, so we can identify which payment method
@@ -247,6 +247,7 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module
      * @param EE_Payment_Method      $payment_method
      *
      * @return EE_Form_Section_Base[]
+     * @throws EE_Error
      */
     public static function change_activate_pm_button($subsections, $payment_method)
     {
@@ -261,26 +262,24 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module
                     $payment_method->type_obj()->introductory_html(),
                     2
                 ) .
-                EEH_HTML::table(
-                    EEH_HTML::tr(
-                        EEH_HTML::th(
-                            EEH_HTML::label(__('Click to Activate ', 'event_espresso'))
-                        ) .
-                        EEH_HTML::td(
-                            EEH_HTML::link(
-                                EE_Admin_Page::add_query_args_and_nonce(
-                                    array(
-                                        'action'              => 'activate_payment_method',
-                                        'payment_method_type' => $payment_method->type(),
-                                        'payment_method_slug' => $payment_method->slug(),
-                                    ),
-                                    EE_PAYMENTS_ADMIN_URL
+                EEH_HTML::tr(
+                    EEH_HTML::th(
+                        EEH_HTML::label(__('Click to Activate ', 'event_espresso'))
+                    ) .
+                    EEH_HTML::td(
+                        EEH_HTML::link(
+                            EE_Admin_Page::add_query_args_and_nonce(
+                                array(
+                                    'action'              => 'activate_payment_method',
+                                    'payment_method_type' => $payment_method->type(),
+                                    'payment_method_slug' => $payment_method->slug(),
                                 ),
-                                $link_text_and_title,
-                                $link_text_and_title,
-                                'activate_' . $payment_method->slug(),
-                                'espresso-button-green button-primary'
-                            )
+                                EE_PAYMENTS_ADMIN_URL
+                            ),
+                            $link_text_and_title,
+                            $link_text_and_title,
+                            'activate_' . $payment_method->slug(),
+                            'button button--primary'
                         )
                     )
                 )
@@ -305,7 +304,7 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module
                 'pmp_more_payment_methods',
                 'ee_pmp_i18n',
                 array(
-                    'delete_pm_confirm' => __(
+                    'delete_pm_confirm' => esc_html__(
                         'Are you sure you want to permanently delete this payment method? It cannot be undone.',
                         'event_espresso'
                     ),
@@ -339,7 +338,8 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module
      */
     public static function add_primary_input_to_payment_method_forms($form)
     {
-        if ($form instanceof EE_Payment_Method_Form
+        if (
+            $form instanceof EE_Payment_Method_Form
              && ! $form->subsection_exists(EED_Payment_Methods_Pro_More_Payment_Methods::on_by_default_meta_key)
         ) {
             $form->add_subsections(
@@ -400,19 +400,19 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module
     }
 
 
-
     /**
      * This needs to be a separate function because of how admin page routes are called.
      * This route activates another payment method of the requested type
      *
-     * @param Payments_Admin_Page $payment_methods_page
+     * @param Payments_Admin_Page $admin_page
      *
      * @throws EE_Error
+     * @throws ReflectionException
      */
     public static function ee_payment_methods_pro_activate_another_payment_method(
-        Payments_Admin_Page $payment_methods_page
+        Payments_Admin_Page $admin_page
     ) {
-        $req_data = $payment_methods_page->get_request_data();
+        $req_data = $admin_page->get_request_data();
         $pm_slug  = null;
         $success  = false;
         if (isset($req_data['payment_method_type'])) {
@@ -421,7 +421,7 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module
             $pm_type_class           = $payment_methods_manager->payment_method_class_from_type($req_data['payment_method_type']);
             if (class_exists($pm_type_class)) {
                 /** @var $pm_type_obj EE_PMT_Base */
-                $pm_type_obj = new $pm_type_class;
+                $pm_type_obj = new $pm_type_class();
                 /** @var EE_Payment_Method $pm */
                 $pm              = $payment_methods_manager->create_payment_method_of_type($pm_type_obj);
                 $admin_name_base = $pm->admin_name();
@@ -429,7 +429,7 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module
                 $count           = 2;
                 while (EEM_Payment_Method::instance()->exists(array( array( 'PMD_slug' => $pm->slug() ) ))) {
                     $pm->set_slug($slug_base . '-' . $count);
-                    $pm->set_admin_name($admin_name_base . ' ' . $count ++);
+                    $pm->set_admin_name($admin_name_base . ' ' . $count++);
                 }
                 $payment_methods_manager->initialize_payment_method($pm);
                 $pm->set_active();
@@ -439,7 +439,7 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module
                 $success = true;
             }
         }
-        $payment_methods_page->redirect_after_action(
+        $admin_page->redirect_after_action(
             $success,
             'Payment Method',
             'activated',
@@ -451,36 +451,24 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module
     }
 
 
-
     /**
      * Route that deletes the specified payment method.
      * Yes this orphans all the payments and transactions for this payment method,
      * but ee core should be able to handle that because it's quite common for a payment
      * method from an addon to be deactivated and would similarly orphan them
      *
-     * @param Payments_Admin_Page $payment_methods_page
+     * @param Payments_Admin_Page $admin_page
      *
-     * @throws \EE_Error
+     * @throws EE_Error
+     * @throws ReflectionException
      */
-    public static function ee_payment_methods_pro_delete_payment_method(Payments_Admin_Page $payment_methods_page)
+    public static function ee_payment_methods_pro_delete_payment_method(Payments_Admin_Page $admin_page)
     {
-        $req_data = $payment_methods_page->get_request_data();
+        $req_data = $admin_page->get_request_data();
         $success  = false;
         if (isset($req_data['payment_method'])) {
             $payment_method = EEM_Payment_Method::instance()->get_one_by_slug($req_data['payment_method']);
             if ($payment_method instanceof EE_Payment_Method) {
-                if (EE_Registry::instance()->is_model_name('Currency_Payment_Method')) {
-                    EEM_Currency_Payment_Method::instance()->delete(
-                        array(
-                            array(
-                                'PMD_ID' => $payment_method->ID(),
-                            ),
-                        ),
-                        // don't allow blocking. So this could orphan transactions and payments but oh well,
-                        // EE should be able to handle that
-                        false
-                    );
-                }
                 // delete related currencies
                 EEM_Extra_Meta::instance()->delete(array(
                     array(
@@ -492,7 +480,7 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module
                 $success = true;
             }
         }
-        $payment_methods_page->redirect_after_action(
+        $admin_page->redirect_after_action(
             $success,
             'Payment Method',
             'deleted',
@@ -501,18 +489,18 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module
     }
 
 
-
     /**
      * Used instead of normal payment method activation route because
      * we want to look for the specific payment method slug
      *
-     * @param Payments_Admin_Page $payment_methods_page
+     * @param Payments_Admin_Page $admin_page
      *
      * @throws EE_Error
+     * @throws ReflectionException
      */
-    public static function ee_payment_methods_pro_activate_payment_method(Payments_Admin_Page $payment_methods_page)
+    public static function ee_payment_methods_pro_activate_payment_method(Payments_Admin_Page $admin_page)
     {
-        $req_data = $payment_methods_page->get_request_data();
+        $req_data = $admin_page->get_request_data();
         $slug     = isset($req_data['payment_method_slug']) ? $req_data['payment_method_slug'] : '';
         $type     = isset($req_data['payment_method_type']) ? $req_data['payment_method_type'] : '';
         // if there's already a payment method of the correct type and slug, just reactivate it
@@ -529,7 +517,7 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module
             $payment_method->set_active();
             $payment_method->save();
             $payment_method->set_available_by_default(true);
-            $payment_methods_page->redirect_after_action(
+            $admin_page->redirect_after_action(
                 1,
                 'Payment Method',
                 'activated',
@@ -547,7 +535,7 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module
         $payment_method = EE_Payment_Method_Manager::instance()
                                                    ->activate_a_payment_method_of_type($payment_method_type);
         if ($payment_method instanceof EE_Payment_Method) {
-            $payment_methods_page->redirect_after_action(
+            $admin_page->redirect_after_action(
                 1,
                 'Payment Method',
                 'activated',
@@ -557,7 +545,7 @@ class EED_Payment_Methods_Pro_More_Payment_Methods extends EED_Module
                 )
             );
         } else {
-            $payment_methods_page->redirect_after_action(
+            $admin_page->redirect_after_action(
                 false,
                 'Payment Method',
                 'activated',

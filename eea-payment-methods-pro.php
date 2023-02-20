@@ -1,4 +1,5 @@
 <?php
+
 /*
   Plugin Name: Event Espresso - Payment Methods Pro (EE 4.9.32+)
   Plugin URI: https://www.eventespresso.com

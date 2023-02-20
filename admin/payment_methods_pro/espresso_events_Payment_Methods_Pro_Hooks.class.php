@@ -1,4 +1,5 @@
 <?php
+
 /**
  * espresso_events_Registration_Form_Hooks
  * Adds hooks for adding a payment methods metabox on the EE admin event editing pages,
@@ -10,7 +11,6 @@
  */
 class espresso_events_Payment_Methods_Pro_Hooks extends EE_Admin_Hooks
 {
-
     protected function _set_hooks_properties()
     {
         $this->_name      = 'payment_methods_pro';
